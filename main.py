@@ -1,4 +1,4 @@
-from flask import Flask, url_for,render_template, request
+﻿from flask import Flask, url_for,render_template, request
 app = Flask(__name__)
 
 
@@ -7,7 +7,7 @@ app = Flask(__name__)
 @app.route('/')
 def index():
     return render_template('map.html')
-
+#hhhh
 @app.route('/map/', methods=['POST'])
 def map():
     if request.method == 'POST':
