@@ -1,9 +1,11 @@
 {% extends "index.html" %}
 {% block body %}
 			
+            {% if data %} {{ data.sex }} {% endif %}
 	
 
 			<div id="map" style="border:1px solid #000;"></div>
+
 
 			<script type="text/javascript" src="http://openapi.map.naver.com/openapi/naverMap.naver?ver=2.0&key=7f988a1d3bc4b0767fef224ef85d1743"></script>
 
@@ -144,12 +146,54 @@
                         oPolyline.setPoints(aPoints); // - 해당 폴리라인에 배열에 저장된 점을 추가함
                 });
 
-		
-
-			
-
-
 
         	</script>
+
+           <form action="{{ url_for('map') }}" method='POST' enctype='multipart/form-data'>
+                
+                 <input type='hidden' name='clinic_id' value="<?=$clinic_id?>"  > <br>
+
+
+
+                남/녀 선택 :
+                <select name='sex[]' size='2' multiple>
+                    <option value='man' name='man'>남자</option>
+                    <option value='woman'>여자</option>
+                </select>
+
+                연령대 선택 :
+                <select name='age[]' size='5' multiple>
+                    <option value='10'>10대</option>
+                    <option value='20'>20대</option>
+                    <option value='30'>30대</option>
+                    <option value='40'>40대</option>
+                    <option value='50'>50대</option>
+                </select>
+
+                월 선택 :
+                 <select name='month[]' size='12' multiple>
+                    <option value='1'>1월</option>
+                    <option value='2'>2월</option>
+                    <option value='3'>3월</option>
+                    <option value='4'>4월</option>
+                    <option value='5'>5월</option>
+                    <option value='6'>6월</option>
+                    <option value='7'>7월</option>
+                    <option value='8'>8월</option>
+                    <option value='9'>9월</option>
+                    <option value='10'>10월</option>
+                    <option value='11'>11월</option>
+                    <option value='12'>12월</option>
+                </select>
+
+                시간 선택 :
+                 <select name='time[]' size='2' multiple>
+                    <option value='afternoon'>점심: 12시~1시 </option>
+                    <option value='evening'>저녁: 7시~8시</option>
+                </select>
+
+
+            <input type='reset'> <input type='submit' value="검색"> <br>
+            </form>
         
 {% endblock %}

@@ -1,23 +1,33 @@
-from flask import Flask, url_for,render_template
+from flask import Flask, url_for,render_template, request
 app = Flask(__name__)
 
 
 
 # 기본루트페이지
 @app.route('/')
-@app.route('/map/')
 def index():
     return render_template('map.html')
+
+@app.route('/map/', methods=['POST'])
+def map():
+    if request.method == 'POST':
+        data={
+            #'sex' : request.form['sex'],
+            #'age' : request.form['age']
+            'sex' : request.form.get('sex', None)
+        }
+        return render_template('map.html', data=data)
+    else:
+        return render_template('map.html')
 
 
 # 커뮤니티
 @app.route('/community/')
-@app.route('/community/<name>')
-def main(name=None):
-    return render_template('community.html', name=name)
+def community():
+    return render_template('community.html')
 
 # 로그인
-@app.route('/login/')
+@app.route('/login')
 @app.route('/login/<name>')
 def hello(name=None):
     return render_template('login.html', name=name)
