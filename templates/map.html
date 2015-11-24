@@ -1,9 +1,7 @@
 {% extends "index.html" %}
 {% block body %}
-			
-            {% if data %} {{ data.sex }} {% endif %}
-	
 
+			
 			<div id="map" style="border:1px solid #000;"></div>
 
 
@@ -151,49 +149,91 @@
 
            <form action="{{ url_for('map') }}" method='POST' enctype='multipart/form-data'>
                 
-                 <input type='hidden' name='clinic_id' value="<?=$clinic_id?>"  > <br>
-
+                <input type='hidden' name='clinic_id' value="<?=$clinic_id?>"  > <br>
 
 
                 남/녀 선택 :
-                <select name='sex[]' size='2' multiple>
-                    <option value='man' name='man'>남자</option>
-                    <option value='woman'>여자</option>
-                </select>
+                <input type="checkbox" name="sex" value="man" >남자
+                <input type="checkbox" name="sex" value="woman">여자
+
 
                 연령대 선택 :
-                <select name='age[]' size='5' multiple>
-                    <option value='10'>10대</option>
-                    <option value='20'>20대</option>
-                    <option value='30'>30대</option>
-                    <option value='40'>40대</option>
-                    <option value='50'>50대</option>
-                </select>
+                <input type="checkbox" name="age" value="10">10대
+                <input type="checkbox" name="age" value="20">20대
+                <input type="checkbox" name="age" value="30">30대
+                <input type="checkbox" name="age" value="40">40대
+                <input type="checkbox" name="age" value="50">50대
+    
 
                 월 선택 :
-                 <select name='month[]' size='12' multiple>
-                    <option value='1'>1월</option>
-                    <option value='2'>2월</option>
-                    <option value='3'>3월</option>
-                    <option value='4'>4월</option>
-                    <option value='5'>5월</option>
-                    <option value='6'>6월</option>
-                    <option value='7'>7월</option>
-                    <option value='8'>8월</option>
-                    <option value='9'>9월</option>
-                    <option value='10'>10월</option>
-                    <option value='11'>11월</option>
-                    <option value='12'>12월</option>
-                </select>
+                <input type="checkbox" name="month" value="1">1월
+                <input type="checkbox" name="month" value="2">2월
+                <input type="checkbox" name="month" value="3">3월
+                <input type="checkbox" name="month" value="4">4월
+                <input type="checkbox" name="month" value="5">5월
+                <input type="checkbox" name="month" value="6">6월
+                <input type="checkbox" name="month" value="7">7월
+                <input type="checkbox" name="month" value="8">8월
+                <input type="checkbox" name="month" value="9">9월
+                <input type="checkbox" name="month" value="10">10월
+                <input type="checkbox" name="month" value="11">11월
+                <input type="checkbox" name="month" value="12">12월
+
 
                 시간 선택 :
-                 <select name='time[]' size='2' multiple>
-                    <option value='afternoon'>점심: 12시~1시 </option>
-                    <option value='evening'>저녁: 7시~8시</option>
-                </select>
-
+                <input type="checkbox" name="time" value="afternoon">점심: 12시~1시
+                <input type="checkbox" name="time" value="evening">저녁: 7시~8시
+            
 
             <input type='reset'> <input type='submit' value="검색"> <br>
             </form>
+
+
+
+
+<script language="javascript">
+
+    // 사용자가 택한 값을 디폴트로 다시 설정해주는 곳...
+
+    {% if data %} 
+
+        var sex = document.getElementsByName("sex");
+        var age = document.getElementsByName("age");
+        var month = document.getElementsByName("month");
+        var time = document.getElementsByName("time");
+
+
+        // 성별 체크 
+        {% for temp in data.sex %}
+            {% if temp =="man" %} sex[0].checked= true; 
+            {% elif temp =="woman" %} sex[1].checked= true;
+            {% endif %}
+        {% endfor %}
+
+          // 나이 체크 
+        {% for temp in data.age %}
+            age[{{temp}}/10-1].checked= true; 
+        {% endfor %}
+
+        // 월 체크 
+        {% for temp in data.month %}
+            month[{{temp}}-1].checked= true; 
+        {% endfor %}
+
+          // 시간  체크 
+        {% for temp in data.time %}
+            {% if temp =="afternoon" %} time[0].checked= true; 
+            {% elif temp =="evening" %} time[1].checked= true;
+            {% endif %}
+        {% endfor %}
+
+
+    {% endif %}
+
+
+</script>
+
+
+
         
 {% endblock %}

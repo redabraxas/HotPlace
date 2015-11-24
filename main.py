@@ -82,9 +82,10 @@ def index():
 def map():
     if request.method == 'POST':
         data={
-            #'sex' : request.form['sex'],
-            #'age' : request.form['age']
-            'sex' : request.form.get('sex', None)
+            'sex' :request.form.getlist('sex', None),
+            'age' : request.form.getlist('age', None),
+            'month' : request.form.getlist('month', None),
+            'time' : request.form.getlist('time', None)
         }
         return render_template('map.html', data=data)
     else:
