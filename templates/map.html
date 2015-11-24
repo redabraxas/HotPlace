@@ -1,6 +1,14 @@
 {% extends "index.html" %}
 {% block body %}
 
+<!-- {% for entry in entries %}
+ <li>  <h2>{{ entry }}</h2>
+ {% else %}
+ <li> <em>Unbelievable. No entries here so far</em>
+ {% endfor %} -->
+
+
+
 			
 			<div id="map" style="border:1px solid #000;"></div>
 
@@ -9,6 +17,46 @@
 
 
 			<script type="text/javascript">
+
+                // function init(){  
+                //         google.maps.event.addListener(map, 'zoom_changed', function() {
+                //             var bounds =  map.getBounds();
+                //             var endLo = bounds.getNorthEast();
+                //             var startLo = bounds.getSouthWest();
+                //             addMarker(startLo, endLo);
+                //         });
+
+                //         google.maps.event.addListener(map, 'dragend', function(evt){
+                //             var bounds =  map.getBounds();
+                //             var endLo = bounds.getNorthEast();
+                //             var startLo = bounds.getSouthWest();
+                //             addMarker(startLo, endLo);
+                //         });
+                // }
+
+                //                 //마커 출력 함수
+                // function addMarker(startLo,endLo){
+                //     for (var i=0; i < 반복횟수; i++){
+
+                        
+                //     marker = new google.maps.Marker({
+                //                 position: latlng,
+                //                 map: map,
+                //                 icon: "truck.png",
+                //                 title : carnm+'('+carid+')'
+                //             });
+
+                //              markersArray.push(marker);
+                //             //지도에 출력된 마커를 클릭했을 경우 이벤트(infoWindow 출력)
+                //              google.maps.event.addListener(marker, 'click', function (event){
+                //             popInfoWindow(인포윈도우에 출력할 파라미터);    //popInfoWindow 함수는 생략
+                //             });
+                //     }
+                // }
+
+
+
+
                 var oSeoulCityPoint = new nhn.api.map.LatLng(37.5675451, 126.9773356);
                 var defaultLevel = 11;
                 var oMap = new nhn.api.map.Map(document.getElementById('map'), { 
@@ -152,32 +200,41 @@
                 <input type='hidden' name='clinic_id' value="<?=$clinic_id?>"  > <br>
 
 
-                남/녀 선택 :
-                <input type="checkbox" name="sex" value="man" >남자
-                <input type="checkbox" name="sex" value="woman">여자
+                <div>
+                    남/녀 선택 :
+                    <input type="checkbox" name="sex" value="man" >남자
+                    <input type="checkbox" name="sex" value="woman">여자
+                </div>
 
+                <div>
+                    연령대 선택 : <br>
+                    10대: <input type="text" name="age[]" maxlength="3" size="3" value="0">명 이상 <br>
+                    20대: <input type="text" name="age[]" maxlength="3" size="3" value="0">명 이상 <br>
+                    30대: <input type="text" name="age[]" maxlength="3" size="3" value="0">명 이상 <br>
+                    40대: <input type="text" name="age[]" maxlength="3" size="3" value="0">명 이상 <br>
+                    50대: <input type="text" name="age[]" maxlength="3" size="3" value="0">명 이상 <br>
 
-                연령대 선택 :
-                <input type="checkbox" name="age" value="10">10대
-                <input type="checkbox" name="age" value="20">20대
-                <input type="checkbox" name="age" value="30">30대
-                <input type="checkbox" name="age" value="40">40대
-                <input type="checkbox" name="age" value="50">50대
+                </div>
+
+                <div>
+                    월 선택 : <br>
+                    <input type="checkbox" name="month" value="1">1월
+                    <input type="checkbox" name="month" value="2">2월
+                    <input type="checkbox" name="month" value="3">3월
+                    <input type="checkbox" name="month" value="4">4월
+                    <input type="checkbox" name="month" value="5">5월
+                    <input type="checkbox" name="month" value="6">6월
+                    <input type="checkbox" name="month" value="7">7월
+                    <input type="checkbox" name="month" value="8">8월
+                    <input type="checkbox" name="month" value="9">9월
+                    <input type="checkbox" name="month" value="10">10월
+                    <input type="checkbox" name="month" value="11">11월
+                    <input type="checkbox" name="month" value="12">12월
+
+                </div>
     
 
-                월 선택 :
-                <input type="checkbox" name="month" value="1">1월
-                <input type="checkbox" name="month" value="2">2월
-                <input type="checkbox" name="month" value="3">3월
-                <input type="checkbox" name="month" value="4">4월
-                <input type="checkbox" name="month" value="5">5월
-                <input type="checkbox" name="month" value="6">6월
-                <input type="checkbox" name="month" value="7">7월
-                <input type="checkbox" name="month" value="8">8월
-                <input type="checkbox" name="month" value="9">9월
-                <input type="checkbox" name="month" value="10">10월
-                <input type="checkbox" name="month" value="11">11월
-                <input type="checkbox" name="month" value="12">12월
+              
 
 
                 시간 선택 :
@@ -188,9 +245,7 @@
             <input type='reset'> <input type='submit' value="검색"> <br>
             </form>
 
-
-
-
+{{ data.age}}
 <script language="javascript">
 
     // 사용자가 택한 값을 디폴트로 다시 설정해주는 곳...
@@ -198,10 +253,9 @@
     {% if data %} 
 
         var sex = document.getElementsByName("sex");
-        var age = document.getElementsByName("age");
+        var age = document.getElementsByName("age[]");
         var month = document.getElementsByName("month");
         var time = document.getElementsByName("time");
-
 
         // 성별 체크 
         {% for temp in data.sex %}
@@ -210,9 +264,11 @@
             {% endif %}
         {% endfor %}
 
-          // 나이 체크 
+        // 나이 체크 
+        var i=0;
         {% for temp in data.age %}
-            age[{{temp}}/10-1].checked= true; 
+            //age[0].disabled= temp;  
+            // 일단 보류.. 
         {% endfor %}
 
         // 월 체크 

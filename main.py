@@ -7,8 +7,6 @@ app = Flask(__name__)
 
 #configuration
 DATABASE='test.db'
-
-app=Flask(__name__)
 app.config.from_object(__name__) #대문자로 설정된 값들을 config에 추가
 
 def connect_db():
@@ -55,7 +53,7 @@ def init_db():
 
         insertsql='''insert into population values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);'''
         cur.execute(insertsql,(num,p_year,p_month,p_day,isholiday,p_time,location,mapx,mapy,weather,man10,man20,man30,man40,man50,woman10,woman20,woman30,woman40,woman50))
-        #con.commit()
+        con.commit()
     
    
 def read_db():
@@ -63,6 +61,24 @@ def read_db():
     cur=con.cursor()
     cur.execute("select * from population ")
     print(cur.fetchall())
+
+
+def getSearchMap(data):
+
+    # data.sex, data.age, data.month, data.time -> 전부 리스트 타입으로 사용자가 택한 값만 들어있습니다.
+    # ex) data.sex = [man, woman]  data.age=[10,40] data.month =[1,5,6]  data.time=[afternoon, evening]
+
+    # 여기를 작성해주세요 
+    where_query = "";
+
+    cur = g.db.execute('select * from population '+where_query)
+    entries = [dict(year=row[1], month=row[2],  day=row[3],  time=row[5], isholiday=row[4],  
+        location=row[6], mapx=row[7], mapy=row[8], weather=row[9], 
+        man10=row[10], man20=row[11], man30=row[12], man40=row[13], man50=row[14],
+        woman10=row[15], woman20=row[16], woman30=row[17], woman40=row[18], woman50=row[19]
+        ) for row in cur.fetchall()]
+    return entries;
+
 
 
 @app.before_request
@@ -83,11 +99,13 @@ def map():
     if request.method == 'POST':
         data={
             'sex' :request.form.getlist('sex', None),
-            'age' : request.form.getlist('age', None),
+            'age' : request.form.getlist('age[]', None),
             'month' : request.form.getlist('month', None),
             'time' : request.form.getlist('time', None)
         }
-        return render_template('map.html', data=data)
+
+        entries= getSearchMap(data);
+        return render_template('map.html', data=data, entries=entries)
     else:
         return render_template('map.html')
 
