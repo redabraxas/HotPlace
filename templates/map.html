@@ -1,14 +1,5 @@
 {% extends "index.html" %}
 {% block body %}
-
-<!-- {% for entry in entries %}
- <li>  <h2>{{ entry }}</h2>
- {% else %}
- <li> <em>Unbelievable. No entries here so far</em>
- {% endfor %} -->
-
-
-
 			
 			<div id="map" style="border:1px solid #000;"></div>
 
@@ -18,47 +9,14 @@
 
 			<script type="text/javascript">
 
-                // function init(){  
-                //         google.maps.event.addListener(map, 'zoom_changed', function() {
-                //             var bounds =  map.getBounds();
-                //             var endLo = bounds.getNorthEast();
-                //             var startLo = bounds.getSouthWest();
-                //             addMarker(startLo, endLo);
-                //         });
-
-                //         google.maps.event.addListener(map, 'dragend', function(evt){
-                //             var bounds =  map.getBounds();
-                //             var endLo = bounds.getNorthEast();
-                //             var startLo = bounds.getSouthWest();
-                //             addMarker(startLo, endLo);
-                //         });
-                // }
-
-                //                 //마커 출력 함수
-                // function addMarker(startLo,endLo){
-                //     for (var i=0; i < 반복횟수; i++){
-
-                        
-                //     marker = new google.maps.Marker({
-                //                 position: latlng,
-                //                 map: map,
-                //                 icon: "truck.png",
-                //                 title : carnm+'('+carid+')'
-                //             });
-
-                //              markersArray.push(marker);
-                //             //지도에 출력된 마커를 클릭했을 경우 이벤트(infoWindow 출력)
-                //              google.maps.event.addListener(marker, 'click', function (event){
-                //             popInfoWindow(인포윈도우에 출력할 파라미터);    //popInfoWindow 함수는 생략
-                //             });
-                //     }
-                // }
+               
 
 
-
-
-                var oSeoulCityPoint = new nhn.api.map.LatLng(37.5675451, 126.9773356);
-                var defaultLevel = 11;
+                // 기본 포인트 : 서울 중심
+                // nhn.api.map.setDefaultPoint('UTMK');
+                //var oSeoulCityPoint = new nhn.api.map.LatLng(37.5675451, 126.9773356);
+                 var oSeoulCityPoint = new nhn.api.map.TM128(307677, 549510);
+                var defaultLevel = 11; // 줌 레벨 11 
                 var oMap = new nhn.api.map.Map(document.getElementById('map'), { 
                                                 point : oSeoulCityPoint,
                                                 zoom : defaultLevel,
@@ -92,10 +50,12 @@
 
 
               
+                // 마커의 사이즈와 오프셋 아이콘 지쩡 
                 var oSize = new nhn.api.map.Size(28, 37);
                 var oOffset = new nhn.api.map.Size(14, 37);
                 var oIcon = new nhn.api.map.Icon('http://static.naver.com/maps2/icons/pin_spot2.png', oSize, oOffset);
 
+                // 정보 창 
                 var oInfoWnd = new nhn.api.map.InfoWindow();
                 oInfoWnd.setVisible(false);
                 oMap.addOverlay(oInfoWnd);
@@ -106,19 +66,29 @@
                 });
 
 
-               	// 커스텀 ㅁ ㅏ커 하는법?
-                 //아래는 위에서 지정한 좌표에 마커를 표시하는 소스 입니다.
-                var oSize = new nhn.api.map.Size(28, 37);
-                var oOffset = new nhn.api.map.Size(14, 37);
-                var oIcon = new nhn.api.map.Icon('http://i1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png', oSize, oOffset);
-                //icon 이미지를 바꿔서 사용할 수 있습니다.
-                var oMarker = new nhn.api.map.Marker(oIcon, { title : '마커타이틀' }); 
-                oMarker.setPoint(oSeoulCityPoint);
-                oMap.addOverlay(oMarker);
-                // 마커라벨 표시
-                var oLabel1 = new nhn.api.map.MarkerLabel(); // 마커 라벨 선언
-                oMap.addOverlay(oLabel1);// 마커 라벨 지도에 추가. 기본은 라벨이 보이지 않는 상태로 추가됨
-                oLabel1.setVisible(true, oMarker);// 마커 라벨 보이기 
+        
+                // 쿼리에서 온 거 마커 표시하기 
+                {% for entry in entries %}
+                    //{{ entry.mapx}} {{entry.mapy}}
+                    var point = new nhn.api.map.TM128({{entry.mapx}}, {{entry.mapy}});
+                    var oMarker = new nhn.api.map.Marker(oIcon, { title : '마커타이틀' }); 
+                    oMarker.setPoint(point);
+                    oMap.addOverlay(oMarker);
+
+                {% endfor %} 
+
+
+                // // 마커라벨 표시
+                // var oLabel1 = new nhn.api.map.MarkerLabel(); // 마커 라벨 선언
+                // oMap.addOverlay(oLabel1);// 마커 라벨 지도에 추가. 기본은 라벨이 보이지 않는 상태로 추가됨
+                // oLabel1.setVisible(true, oMarker);// 마커 라벨 보이기 
+
+
+
+
+                
+
+
 
 
 
@@ -195,6 +165,8 @@
 
         	</script>
 
+        <div id="select_box">
+
            <form action="{{ url_for('map') }}" method='POST' enctype='multipart/form-data'>
                 
                 <input type='hidden' name='clinic_id' value="<?=$clinic_id?>"  > <br>
@@ -208,11 +180,19 @@
 
                 <div>
                     연령대 선택 : <br>
-                    10대: <input type="text" name="age[]" maxlength="3" size="3" value="0">명 이상 <br>
-                    20대: <input type="text" name="age[]" maxlength="3" size="3" value="0">명 이상 <br>
-                    30대: <input type="text" name="age[]" maxlength="3" size="3" value="0">명 이상 <br>
-                    40대: <input type="text" name="age[]" maxlength="3" size="3" value="0">명 이상 <br>
-                    50대: <input type="text" name="age[]" maxlength="3" size="3" value="0">명 이상 <br>
+
+
+                    {% if data %}
+                          {% for i in range(5) %}
+                            {{ i+1 }}0대: <input type="text" name="age[]" maxlength="3" size="3" value={{ data.age[i] }}>명 이상 <br>
+                        {% endfor %}
+                    {% else %}
+                        {% for i in range(5) %}
+                            {{ i+1 }}0대: <input type="text" name="age[]" maxlength="3" size="3" value=0>명 이상 <br>
+                        {% endfor %}
+                  
+                    {% endif %}
+                    
 
                 </div>
 
@@ -236,14 +216,18 @@
 
               
 
+                <div>
 
-                시간 선택 :
-                <input type="checkbox" name="time" value="afternoon">점심: 12시~1시
-                <input type="checkbox" name="time" value="evening">저녁: 7시~8시
+                시간 선택 : <br>
+                    <input type="checkbox" name="time" value="afternoon">점심: 12시~1시
+                    <input type="checkbox" name="time" value="evening">저녁: 7시~8시
+                </div>
             
 
             <input type='reset'> <input type='submit' value="검색"> <br>
             </form>
+
+        </div>
 
 <script language="javascript">
 
@@ -262,15 +246,6 @@
                 {% if temp =="man" %} sex[0].checked= true; 
                 {% elif temp =="woman" %} sex[1].checked= true;
                 {% endif %}
-            {% endfor %}
-        {% endif %}
-
-        // 나이 체크 
-        {% if data.age %}
-            var i=0;
-            {% for temp in data.age %}
-                //age[0].disabled= temp;  
-                // 일단 보류.. 
             {% endfor %}
         {% endif %}
 

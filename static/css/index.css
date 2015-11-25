@@ -72,9 +72,16 @@ li { list-style: none }
 
 #map{
 	height: 500px;
-	width: 100%;
-	background-color: red;
+	width: 80%;
+	float: left;
 
+}
+
+#select_box{
+	position: relative;
+	height: 500px;
+	width: 20%;
+	float: right;
 }
 
 
@@ -84,7 +91,6 @@ li { list-style: none }
 	height: 500px;
 	width: 100%;
 }
-
 
 
 

@@ -89,7 +89,7 @@ def getSearchMap(data):
     # where_query = where_query[:len(where_query)-4]
     # where_query+=";"
     # cur = g.db.execute('select * from population '+where_query)
-    cur = g.db.execute('select * from population');
+    cur = g.db.execute('select * from population where p_month=6 and man10>100');
     entries = [dict(year=row[1], month=row[2],  day=row[3],  time=row[5], isholiday=row[4],  
         location=row[6], mapx=row[7], mapy=row[8], weather=row[9], 
         man10=row[10], man20=row[11], man30=row[12], man40=row[13], man50=row[14],
