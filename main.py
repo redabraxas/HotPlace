@@ -66,29 +66,29 @@ def read_db():
 def getSearchMap(data):
 
     # data.sex, data.age, data.month, data.time -> 전부 리스트 타입으로 사용자가 택한 값만 들어있습니다.
-    # ex) data.sex = [man, woman]  data.age=[10,40] data.month =[1,5,6]  data.time=[afternoon, evening]
+    # ex) data['sex'] = [man, woman]  data.age=[10,40] data.month =[1,5,6]  data.time=[afternoon, evening]
     
     # 여기를 작성해주세요
     where_query = "where ";
-    for i in range(len(data.sex)):
-        where_query+='sex = '
-        where_query+=data.sex.pop()
-        where_query+=' and '
-    for i in range(len(data.age)):
+    for i in range(len(data['sex'])):
+        where_query+='sex = "'
+        where_query+=data['sex'].pop()
+        where_query+='" and '
+    for i in range(len(data['age'])):
         where_query+='age = '
-        where_query+=str(data.age.pop())
+        where_query+=str(data['age'].pop())
         where_query+=' and '
-    for i in range(len(data.month)):
+    for i in range(len(data['month'])):
         where_query+='data.month = '
-        where_query+=str(data.month.pop())
+        where_query+=str(data['month'].pop())
         where_query+=' and '
-    for i in range(len(data.time)):
-        where_query+='time = '
-        where_query+=data.time.pop()
-        where_query+=' and '
+    for i in range(len(data['time'])):
+        where_query+='time = "'
+        where_query+=data['time'].pop()
+        where_query+='" and '
     #and 제거
     where_query = where_query[:len(where_query)-4]
-
+    where_query+=";"
     cur = g.db.execute('select * from population '+where_query)
     entries = [dict(year=row[1], month=row[2],  day=row[3],  time=row[5], isholiday=row[4],  
         location=row[6], mapx=row[7], mapy=row[8], weather=row[9], 
