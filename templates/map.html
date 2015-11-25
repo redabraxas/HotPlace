@@ -245,7 +245,6 @@
             <input type='reset'> <input type='submit' value="검색"> <br>
             </form>
 
-{{ data.age}}
 <script language="javascript">
 
     // 사용자가 택한 값을 디폴트로 다시 설정해주는 곳...
@@ -256,32 +255,40 @@
         var age = document.getElementsByName("age[]");
         var month = document.getElementsByName("month");
         var time = document.getElementsByName("time");
-
-        // 성별 체크 
-        {% for temp in data.sex %}
-            {% if temp =="man" %} sex[0].checked= true; 
-            {% elif temp =="woman" %} sex[1].checked= true;
-            {% endif %}
-        {% endfor %}
+            
+        // 성별체크 
+        {% if data.sex %}
+            {% for temp in data.sex %}
+                {% if temp =="man" %} sex[0].checked= true; 
+                {% elif temp =="woman" %} sex[1].checked= true;
+                {% endif %}
+            {% endfor %}
+        {% endif %}
 
         // 나이 체크 
-        var i=0;
-        {% for temp in data.age %}
-            //age[0].disabled= temp;  
-            // 일단 보류.. 
-        {% endfor %}
+        {% if data.age %}
+            var i=0;
+            {% for temp in data.age %}
+                //age[0].disabled= temp;  
+                // 일단 보류.. 
+            {% endfor %}
+        {% endif %}
 
         // 월 체크 
-        {% for temp in data.month %}
-            month[{{temp}}-1].checked= true; 
-        {% endfor %}
+        {% if data.month %}
+            {% for temp in data.month %}
+                month[{{temp}}-1].checked= true; 
+            {% endfor %}
+        {% endif %}
 
           // 시간  체크 
-        {% for temp in data.time %}
-            {% if temp =="afternoon" %} time[0].checked= true; 
-            {% elif temp =="evening" %} time[1].checked= true;
-            {% endif %}
-        {% endfor %}
+        {% if data.time %}
+            {% for temp in data.time %}
+                {% if temp =="afternoon" %} time[0].checked= true; 
+                {% elif temp =="evening" %} time[1].checked= true;
+                {% endif %}
+            {% endfor %}
+        {% endif %}
 
 
     {% endif %}

@@ -66,11 +66,11 @@ def read_db():
 def getSearchMap(data):
 
     # data.sex, data.age, data.month, data.time -> 전부 리스트 타입으로 사용자가 택한 값만 들어있습니다.
-    # ex) data.sex = [man, woman]  data.age=[10,40] data.month =[1,5,6]  data.time=[afternoon, evening]
+    # ex) data.sex = [man, woman]  data.age=[0,0,0,10,40] data.month =[1,5,6]  data.time=[afternoon, evening]
     
     # 여기를 작성해주세요
     where_query = "where ";
-    for i in range(len(data.sex)):
+    for i in range(len(data['sex'])):
         where_query+='sex = '
         where_query+=data.sex.pop()
         where_query+=' and '
@@ -122,7 +122,7 @@ def map():
             'time' : request.form.getlist('time', None)
         }
 
-        entries= getSearchMap(data);
+        entries= getSearchMap(data=data);
         return render_template('map.html', data=data, entries=entries)
     else:
         return render_template('map.html')
