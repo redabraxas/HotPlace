@@ -67,29 +67,95 @@ def getSearchMap(data):
 
     # data.sex, data.age, data.month, data.time -> 전부 리스트 타입으로 사용자가 택한 값만 들어있습니다.
     # ex) data['sex'] = [man, woman]  data.age=[10,40] data.month =[1,5,6]  data.time=[afternoon, evening]
-
-    # where_query = "where ";
-    # for i in range(len(data['sex'])):
-    #     where_query+='sex = '
-    #     where_query+=data['sex'].pop()
-    #     where_query+=' and '
-    # for i in range(len(data['age'])):
-    #     where_query+='age = '
-    #     where_query+=str(data['age'].pop())
-    #     where_query+=' and '
-    # for i in range(len(data['month'])):
-    #     where_query+='data.month = '
-    #     where_query+=str(data['month'].pop())
-    #     where_query+=' and '
-    # for i in range(len(data['time'])):
-    #     where_query+='time = "'
-    #     where_query+=data['time'].pop()
-    #     where_query+='" and '
-    # #and 제거
-    # where_query = where_query[:len(where_query)-4]
-    # where_query+=";"
-    # cur = g.db.execute('select * from population '+where_query)
-    cur = g.db.execute('select * from population where p_month=6 and man10>100');
+    
+    where_query = "where "
+    for i in range(len(data['sex'])):
+        sextemp = data['sex'].pop()
+        if('man' == sextemp):
+            agecount=5
+            agesize = len(data['age'])
+            for i in range(agesize):
+                #마지막 원소를 첫원소에 저장
+                agetemp2 = data['age'].pop()
+                data['age'].insert(0,agetemp2)
+                if(agetemp2 == 0):
+                    agecount=agecount-1
+                    continue
+                else:
+                    agetemp = str(agetemp2)
+                    if(5 == agecount):
+                        where_query+='man50>'
+                        where_query+=agetemp
+                        where_query+=' and '
+                    elif(4 == agecount):
+                        where_query+='man40>'
+                        where_query+=agetemp
+                        where_query+=' and '
+                    elif(3 == agecount):
+                        where_query+='man30>'
+                        where_query+=agetemp
+                        where_query+=' and '
+                    elif(2 == agecount):
+                        where_query+='man20>'
+                        where_query+=agetemp
+                        where_query+=' and '
+                    elif(1 == agecount):
+                        where_query+='man10>'
+                        where_query+=agetemp
+                        where_query+=' and '
+                    agecount=agecount-1
+                
+        elif('woman' == sextemp):
+            agecount=5
+            agesize = len(data['age'])
+            for i in range(agesize):
+                agetemp2 = data['age'].pop()
+                data['age'].insert(0,agetemp2)
+                if(agetemp2 == 0):
+                    agecount=agecount-1
+                    continue
+                else:
+                    agetemp = str(agetemp2)
+                    if(5 == agecount):
+                        where_query+='woman50>'
+                        where_query+=agetemp
+                        where_query+=' and '
+                    elif(4 == agecount):
+                        where_query+='woman40>'
+                        where_query+=agetemp
+                        where_query+=' and '
+                    elif(3 == agecount):
+                        where_query+='woman30>'
+                        where_query+=agetemp
+                        where_query+=' and '
+                    elif(2 == agecount):
+                        where_query+='woman20>'
+                        where_query+=agetemp
+                        where_query+=' and '
+                    elif(1 == agecount):
+                        where_query+='woman10>'
+                        where_query+=agetemp
+                        where_query+=' and '
+                    agecount=agecount-1                
+    for i in range(len(data['month'])):
+        where_query+='p_month='
+        where_query+=str(data['month'].pop())
+        where_query+=' and '
+    for i in range(len(data['time'])):
+        timetemp = data['time'].pop() 
+        where_query+='p_time like'
+        if('afternoon' == timetemp):
+            where_query+=" '%12시%'"
+        elif('evening' == timetemp):
+            where_query+=" '%19시%'"    
+        where_query+=' and '
+    
+    #and 제거
+    where_query = where_query[:len(where_query)-5]
+    where_query+=";"
+    
+    cur = g.db.execute('select * from population '+where_query)
+    #cur = g.db.execute('select * from population where p_month=6 and man10>100');
     entries = [dict(year=row[1], month=row[2],  day=row[3],  time=row[5], isholiday=row[4],  
         location=row[6], mapx=row[7], mapy=row[8], weather=row[9], 
         man10=row[10], man20=row[11], man30=row[12], man40=row[13], man50=row[14],
