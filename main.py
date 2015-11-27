@@ -24,6 +24,39 @@ def init_db():
     weather text,man10 integer,man20 integer,man30 integer,man40 integer,man50 integer,
     woman10 integer,woman20 integer,woman30 integer,woman40 integer,woman50 integer);'''
     cur.execute(sql)
+    userSql = '''create table if not exists user(
+        id varchar(20) not null,
+        passwd varchar(20),
+        nick varchar(20),
+        primary key (id)
+
+        );'''
+    localCommSql='''create table if not exists localcomm(
+        w_category varchar(10),
+        w_area varchar(10),
+        w_year integer,
+        w_month integer,
+        w_day integer,
+        w_title text,
+        w_content integer,
+        w_num integer not null auto_increment,
+        foreign key(w_userid) references user(id) ON UPDATE CASCADE,
+        primary key (w_num)
+
+        );'''
+    localReplySql='''create table if not exists localReply(
+        r_num integer not null auto_increment,
+        foreign key(r_userid) references user(id) ON UPDATE CASCADE,
+        r_content text,
+        r_year integer,
+        r_month integer,
+        r_day integer,
+        primary key (r_num)
+
+        );'''
+    cur.execute(userSql)
+    cur.execute(localCommSql)
+    cur.execute(localReplySql)
 
     for child in note.findall("record"):
         num=child.findtext("조사번호")
