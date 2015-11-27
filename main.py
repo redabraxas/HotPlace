@@ -227,16 +227,27 @@ def map():
         return render_template('map.html')
 
 
-# 커뮤니티
-@app.route('/community/')
-def community():
-    return render_template('community.html')
+
 
 # 로그인
 @app.route('/login')
 @app.route('/login/<name>')
 def hello(name=None):
     return render_template('login.html', name=name)
+
+#######start local community part #######
+@app.route('/community/localcomm')
+def localcomm():
+    return render_template('localcomm.html')
+    
+@app.route('/community/')
+def community():
+    return render_template('community.html')
+
+
+
+
+#######end local community part #######
 
 
 
