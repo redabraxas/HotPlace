@@ -1,13 +1,70 @@
-
-
 {% extends "index.html" %}
 {% block body %}
 
-<div id="community">
+  
 
-	ㅇㅇㄹㄴ
-</div>
+ 
+
+ 
+			<div id="community">
+			<div class="communitycontent">
+                
+         
+                   
+                        <a></a>
+          
+                        
+                        
+                    
+                <div id = "communitymenu">
+                	<ul class="ca-menu">
+                		<li>
+                        	<a href="{{ url_for('localcomm') }}">
+                        		<div class="ca-content">
+                        			<h2 class="ca-main">지역별 게시판</h2>
+                                	<h3 class="ca-sub">Local community</h3>
+                            	</div>
+                        	</a>
+                    	</li>
+                	    <li>
+                    	    <a href="#">
+ 
+                        	    <div class="ca-content">
+                        	        <h2 class="ca-main">창업 정보 공유</h2>
+                           		    <h3 class="ca-sub">Information</h3>
+                           		</div>
+                        	</a>
+                    	</li>
+                    	<li>
+                        	<a href="#">
+
+                            	<div class="ca-content">
+                                	<h2 class="ca-main">동업자 찾기</h2>
+                                	<h3 class="ca-sub">Find partner</h3>
+                            	</div>
+                        	</a>
+                    	</li>
+                    	<li>
+                        	<a href="#">
+
+                            	<div class="ca-content">
+                               		<h2 class="ca-main">고객센터</h2>
+                                	<h3 class="ca-sub">Service</h3>
+                            	</div>
+                        	</a>
+                    	</li>
+                	</ul>
+            	</div>
+            	<div id = "communityboard">
+
+            		{% block board %}
+
+            		{% endblock %} 
+            	</div>
+            </div>
+        
 
 
 {% endblock %}
+
 
