@@ -31,6 +31,7 @@ def init_db():
         primary key (id)
 
         );'''
+
     localCommSql='''create table if not exists localcomm(
         w_category varchar(10),
         w_area varchar(10),
@@ -58,6 +59,38 @@ def init_db():
     cur.execute(localCommSql)
     cur.execute(localReplySql)
 
+    #즐겨찾기 테이블 추가
+    #id 외래키로 가져오는 방법..?
+
+    bookmarksql='''create table if not exists bookmark(
+        b_num integer not null,
+        id varchar(20) not null,
+        mapx double,
+        mapy double,
+        zoom integer,
+        p_year integer,
+        p_month integer,
+        p_day integer,
+        isholiday varchar(10),
+        p_time varchar(10),
+        location varchar(30),
+        weather varchar(10),
+        man10 integer,
+        man20 integer,
+        man30 integer,
+        man40 integer,
+        man50 integer,
+        woman10 integer,
+        woman20 integer,
+        woman30 integer,
+        woman40 integer,
+        woman50 integer,
+        tag varchar(30),
+        primary key(b_num)
+    );'''
+
+    cur.execute(bookmarksql)
+    
     for child in note.findall("record"):
         num=child.findtext("조사번호")
         day=child.findtext("조사일자") 
@@ -195,8 +228,6 @@ def getSearchMap(data):
         woman10=row[15], woman20=row[16], woman30=row[17], woman40=row[18], woman50=row[19]
         ) for row in cur.fetchall()]
     return entries;
-
-
 
 @app.before_request
 def before_request():
