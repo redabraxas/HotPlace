@@ -1,0 +1,18 @@
+{% extends "index.html" %}
+{% block body %}
+<h2>Join</h2>
+<!--{% for message in get_flashed_messages() %}
+<div class=flash>{{ message }}</div>
+{% endfor %}-->
+    <form action="{{ url_for('join') }}" method=post>
+        <dl>
+            <dt>id:
+            <dd><input type=text size=30 name=id>
+            <dt>password:
+            <dd><input type="password" size=30 name=passwd>
+            <dt>nickname:
+            <dd><input type=text size=30 name=nick>
+            <dd><input type=submit value=Join></dd>
+        </dl>
+    </form>
+{% endblock %}

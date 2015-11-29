@@ -2,11 +2,16 @@
     abort,flash
 import xml.etree.ElementTree as ET
 import sqlite3
-
-app = Flask(__name__)
+from contextlib import closing
 
 #configuration
 DATABASE='test.db'
+DEBUG=True
+SECRET_KEY='development key'
+USERNAME='admin'
+PASSWORD='default'
+
+app = Flask(__name__)
 app.config.from_object(__name__) #대문자로 설정된 값들을 config에 추가
 
 def connect_db():
@@ -24,13 +29,7 @@ def init_db():
     weather text,man10 integer,man20 integer,man30 integer,man40 integer,man50 integer,
     woman10 integer,woman20 integer,woman30 integer,woman40 integer,woman50 integer);'''
     cur.execute(sql)
-    userSql = '''create table if not exists user(
-        id varchar(20) not null,
-        passwd varchar(20),
-        nick varchar(20),
-        primary key (id)
 
-        );'''
     localCommSql='''create table if not exists localcomm(
         w_category varchar(10),
         w_area varchar(10),
@@ -54,7 +53,7 @@ def init_db():
         primary key (r_num)
 
         );'''
-    cur.execute(userSql)
+
     cur.execute(localCommSql)
     cur.execute(localReplySql)
 
@@ -88,7 +87,18 @@ def init_db():
         cur.execute(insertsql,(num,p_year,p_month,p_day,isholiday,p_time,location,mapx,mapy,weather,man10,man20,man30,man40,man50,woman10,woman20,woman30,woman40,woman50))
         con.commit()
     
-   
+def init_userdb():
+    db=connect_db()
+    userSql = '''create table if not exists user(
+    id string primary key,
+    passwd string not null,
+    nick string not null
+    );
+    '''
+    db.cursor().execute(userSql)
+    db.commit()
+
+
 def read_db():
     con=sqlite3.connect("test.db")
     cur=con.cursor()
@@ -230,10 +240,54 @@ def map():
 
 
 # 로그인
-@app.route('/login')
-@app.route('/login/<name>')
-def hello(name=None):
-    return render_template('login.html', name=name)
+@app.route('/login',methods=['GET','POST'])
+def login():
+    if request.method=='GET':
+        return render_template('login.html')
+    if request.method == 'POST':
+        query="select id, passwd from user where (id = '" +request.form['id']+ "') and (passwd = '" +request.form['passwd']+"')";
+        cur=g.db.execute(query)
+        for row in cur:
+           if row[0]=="":
+              #session['logged_in'] = False
+              flash('Check your ID and password')
+              return redirect(url_for('login'),flash)
+
+           else:
+               session['logged_in'] = True
+               flash('You were logged in')
+               return redirect(url_for('index'))
+    #else:
+    #    error="Invalid request method:{}".format(request.method)
+    return render_template('login.html')
+
+
+#회원가입
+@app.route('/join',methods=['GET','POST'])
+def join():
+    if request.method=='GET':
+        return render_template('join.html')
+    elif request.method=='POST':
+        g.db.execute('insert into user(id,passwd,nick) values(?,?,?)',
+                 [request.form['id'],request.form['passwd'],request.form['nick']])
+        g.db.commit()
+        flash('회원가입이 완료되었습니다.')
+        return redirect(url_for('index'))
+        #return render_template('join.html')
+    else:
+        abort(405)
+    #if not session.get('logged_in'):
+    #    abort(401)
+    
+
+#로그아웃
+@app.route('/logout')
+def logout():
+    session.pop('logged_in',None)
+    flash('You were logged out')
+    return redirect(url_for('index'))
+
+
 
 #######start local community part #######
 @app.route('/community/localcomm')
@@ -270,7 +324,7 @@ def hello3():
 
 
 if __name__ == '__main__':
-    #init_db()
+    #init_userdb()
     app.debug=True
     app.run(port=5000)
 
