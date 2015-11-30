@@ -90,8 +90,8 @@ def init_db():
         con.commit()
 
 def init_bookmark():
-    con=sqlite3.connect("test.db")
-    cur=con.cursor()
+    #con=sqlite3.connect("test.db")
+    #cur=con.cursor()
     #즐겨찾기 테이블 추가
     #id 외래키로 가져오는 방법..?
 
