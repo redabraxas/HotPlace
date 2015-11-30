@@ -59,38 +59,6 @@ def init_db():
     cur.execute(localCommSql)
     cur.execute(localReplySql)
 
-    #즐겨찾기 테이블 추가
-    #id 외래키로 가져오는 방법..?
-
-    bookmarksql='''create table if not exists bookmark(
-        b_num integer not null,
-        id varchar(20) not null,
-        mapx double,
-        mapy double,
-        zoom integer,
-        p_year integer,
-        p_month integer,
-        p_day integer,
-        isholiday varchar(10),
-        p_time varchar(10),
-        location varchar(30),
-        weather varchar(10),
-        man10 integer,
-        man20 integer,
-        man30 integer,
-        man40 integer,
-        man50 integer,
-        woman10 integer,
-        woman20 integer,
-        woman30 integer,
-        woman40 integer,
-        woman50 integer,
-        tag varchar(30),
-        primary key(b_num)
-    );'''
-
-    cur.execute(bookmarksql)
-    
     for child in note.findall("record"):
         num=child.findtext("조사번호")
         day=child.findtext("조사일자") 
@@ -120,7 +88,42 @@ def init_db():
         insertsql='''insert into population values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);'''
         cur.execute(insertsql,(num,p_year,p_month,p_day,isholiday,p_time,location,mapx,mapy,weather,man10,man20,man30,man40,man50,woman10,woman20,woman30,woman40,woman50))
         con.commit()
-    
+
+def init_bookmark():
+    con=sqlite3.connect("test.db")
+    cur=con.cursor()
+    #즐겨찾기 테이블 추가
+    #id 외래키로 가져오는 방법..?
+
+    bookmarksql='''create table if not exists bookmark(
+        b_num integer not null,
+        b_id varchar(20) not null,
+        mapx double,
+        mapy double,
+        zoom integer,
+        p_year integer,
+        p_month integer,
+        p_day integer,
+        isholiday varchar(10),
+        p_time varchar(10),
+        location varchar(30),
+        weather varchar(10),
+        man10 integer,
+        man20 integer,
+        man30 integer,
+        man40 integer,
+        man50 integer,
+        woman10 integer,
+        woman20 integer,
+        woman30 integer,
+        woman40 integer,
+        woman50 integer,
+        tag varchar(30),
+        primary key(b_num)
+    );'''
+
+    cur.execute(bookmarksql)
+    #con.commit()    
    
 def read_db():
     con=sqlite3.connect("test.db")
@@ -134,6 +137,7 @@ def getSearchMap(data):
     # data.sex, data.age, data.month, data.time -> 전부 리스트 타입으로 사용자가 택한 값만 들어있습니다.
     # ex) data['sex'] = [man, woman]  data.age=[10,40] data.month =[1,5,6]  data.time=[afternoon, evening]
     
+    ageflag = [0]*10
     where_query = "where "
     for i in range(len(data['sex'])):
         sextemp = data['sex'].pop()
@@ -153,22 +157,27 @@ def getSearchMap(data):
                         where_query+='man50>'
                         where_query+=agetemp
                         where_query+=' and '
+                        ageflag[0]=1;
                     elif(4 == agecount):
                         where_query+='man40>'
                         where_query+=agetemp
                         where_query+=' and '
+                        ageflag[1]=1;
                     elif(3 == agecount):
                         where_query+='man30>'
                         where_query+=agetemp
                         where_query+=' and '
+                        ageflag[2]=1;
                     elif(2 == agecount):
                         where_query+='man20>'
                         where_query+=agetemp
                         where_query+=' and '
+                        ageflag[3]=1;
                     elif(1 == agecount):
                         where_query+='man10>'
                         where_query+=agetemp
                         where_query+=' and '
+                        ageflag[4]=1;
                     agecount=agecount-1
                 
         elif('woman' == sextemp):
@@ -186,22 +195,27 @@ def getSearchMap(data):
                         where_query+='woman50>'
                         where_query+=agetemp
                         where_query+=' and '
+                        ageflag[5]=1;
                     elif(4 == agecount):
                         where_query+='woman40>'
                         where_query+=agetemp
                         where_query+=' and '
+                        ageflag[6]=1;
                     elif(3 == agecount):
                         where_query+='woman30>'
                         where_query+=agetemp
                         where_query+=' and '
+                        ageflag[7]=1;
                     elif(2 == agecount):
                         where_query+='woman20>'
                         where_query+=agetemp
                         where_query+=' and '
+                        ageflag[8]=1;
                     elif(1 == agecount):
                         where_query+='woman10>'
                         where_query+=agetemp
                         where_query+=' and '
+                        ageflag[9]=1;
                     agecount=agecount-1                
     for i in range(len(data['month'])):
         where_query+='p_month='
@@ -218,10 +232,27 @@ def getSearchMap(data):
     
     #and 제거
     where_query = where_query[:len(where_query)-5]
-    where_query+=";"
+    where_query+= "order by maxpop desc;"
+
+    #부속질의문 사용
+    #man10 - woman50
+    where_query2 = "(select Max("
+    agetemp2=0
+    for i in range(10):
+        if(ageflag[i]==1):
+            if(i>=5):
+                agetemp2=50
+                where_query2+="wo"
+            where_query2+="man"
+            where_query2+=str(50-i*10+agetemp2)
+            where_query2+=", "
+    #쉼표 제거
+    where_query2 = where_query2[:len(where_query2)-2]
+    where_query2+=")) as maxpop"
     
-    cur = g.db.execute('select * from population '+where_query)
-    #cur = g.db.execute('select * from population where p_month=6 and man10>100');
+    cur = g.db.execute('select *, '+where_query2+' from population '+where_query)
+    #부속질의문 사용 끝
+    
     entries = [dict(year=row[1], month=row[2],  day=row[3],  time=row[5], isholiday=row[4],  
         location=row[6], mapx=row[7], mapy=row[8], weather=row[9], 
         man10=row[10], man20=row[11], man30=row[12], man40=row[13], man50=row[14],
@@ -302,6 +333,7 @@ def hello3():
 
 if __name__ == '__main__':
     #init_db()
+    #init_bookmark()
     app.debug=True
     app.run(port=5000)
 
