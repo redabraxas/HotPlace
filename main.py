@@ -1,4 +1,4 @@
-﻿from flask import Flask, url_for,render_template, request,session,g,redirect,\
+from flask import Flask, url_for,render_template, request,session,g,redirect,\
     abort,flash
 import xml.etree.ElementTree as ET
 import sqlite3
@@ -11,19 +11,9 @@ app.config.from_object(__name__) #대문자로 설정된 값들을 config에 추
 
 def connect_db():
     return sqlite3.connect(app.config['DATABASE'])
-
-def init_db():
-
-    tree=ET.parse("population.xml")
-    note=tree.getroot()
-
+def init_commdb():
     con=sqlite3.connect("test.db")
     cur=con.cursor()
-    sql='''create table if not exists population(num integer,p_year integer,p_month integer,p_day integer,
-    isholiday text,p_time text,location text,mapx real,mapy real,
-    weather text,man10 integer,man20 integer,man30 integer,man40 integer,man50 integer,
-    woman10 integer,woman20 integer,woman30 integer,woman40 integer,woman50 integer);'''
-    cur.execute(sql)
     userSql = '''create table if not exists user(
         id varchar(20) not null,
         passwd varchar(20),
@@ -40,24 +30,39 @@ def init_db():
         w_day integer,
         w_title text,
         w_content integer,
-        w_num integer not null auto_increment,
-        foreign key(w_userid) references user(id) ON UPDATE CASCADE,
-        primary key (w_num)
-
+        w_num integer not null primary key autoincrement,
+        w_userid varchar(20),
+        foreign key (w_userid) references user(id) ON UPDATE CASCADE
         );'''
     localReplySql='''create table if not exists localReply(
-        r_num integer not null auto_increment,
-        foreign key(r_userid) references user(id) ON UPDATE CASCADE,
+        r_num integer not null primary key autoincrement,
+        r_userid varchar(20),
         r_content text,
         r_year integer,
         r_month integer,
         r_day integer,
-        primary key (r_num)
-
+        foreign key(r_userid) references user(id) ON UPDATE CASCADE
         );'''
     cur.execute(userSql)
     cur.execute(localCommSql)
+
     cur.execute(localReplySql)
+    con.commit()
+
+
+def init_db():
+
+    tree=ET.parse("population.xml")
+    note=tree.getroot()
+
+    con=sqlite3.connect("test.db")
+    cur=con.cursor()
+    sql='''create table if not exists population(num integer,p_year integer,p_month integer,p_day integer,
+    isholiday text,p_time text,location text,mapx real,mapy real,
+    weather text,man10 integer,man20 integer,man30 integer,man40 integer,man50 integer,
+    woman10 integer,woman20 integer,woman30 integer,woman40 integer,woman50 integer);'''
+    cur.execute(sql)
+
 
     for child in note.findall("record"):
         num=child.findtext("조사번호")
@@ -298,7 +303,7 @@ def hello(name=None):
     return render_template('login.html', name=name)
 
 #######start local community part #######
-@app.route('/community/localcomm')
+@app.route('/localcomm')
 def localcomm():
     return render_template('localcomm.html')
     
@@ -306,6 +311,15 @@ def localcomm():
 def community():
     return render_template('community.html')
 
+@app.route('/add')
+def add():
+    return render_template('add.html')
+
+@app.route('/adding', methods=['POST'])
+def adding():
+    g.db.execute('insert into localcomm (w_category,w_area,w_year,w_month,w_day,w_title,w_content) values (?,?,?,?,?,?,?);',(request.form['category'], request.form['area'],request.form['year'],request.form['month'],request.form['day'],request.form['title'] ,request.form['content']))
+    g.db.commit()
+    return redirect(url_for('localcomm'))
 
 
 
@@ -334,6 +348,7 @@ def hello3():
 if __name__ == '__main__':
     #init_db()
     #init_bookmark()
+    #init_commdb()
     app.debug=True
     app.run(port=5000)
 

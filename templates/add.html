@@ -1,0 +1,24 @@
+{% extends "community.html" %}
+{% block board %}
+
+
+<form action="{{ url_for('adding') }}" method=post class=adding> <dl>
+	<dt>year:
+		<dd><input type=text size=30 name= year>
+	<dt>month:
+		<dd><input type=text size=30 name= month>
+	<dt>day:
+		<dd><input type=text size=30 name= day>
+	<dt>area:
+		<dd><input type=text size=30 name= area>		
+	<dt>category:
+		<dd><input type=text size=30 name= category>		
+	<dt>제목:
+		<dd><input type=text size=30 name= title>
+	<dt>Text:
+		<dd><textarea name=w_content rows=5 cols=40></textarea>
+		<dd><input type=submit value=Share>
+
+</dl> </form>
+
+{% endblock %} 
