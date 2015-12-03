@@ -305,7 +305,10 @@ def hello(name=None):
 #######start local community part #######
 @app.route('/localcomm')
 def localcomm():
-    return render_template('localcomm.html')
+    cur = g.db.execute('select w_category,w_area,w_title,w_content,w_year,w_month,w_day,w_num from localcomm order by w_num desc')
+    entries = [dict(w_category=row[0], w_area=row[1],w_title=row[2],w_content=row[3],w_year=row[4],w_month=row[5],w_day=row[6],w_num=row[7]) for row in cur.fetchall()]
+    print(entries)
+    return render_template('localcomm.html', entries = entries)
     
 @app.route('/community/')
 def community():
@@ -317,9 +320,18 @@ def add():
 
 @app.route('/adding', methods=['POST'])
 def adding():
-    g.db.execute('insert into localcomm (w_category,w_area,w_year,w_month,w_day,w_title,w_content) values (?,?,?,?,?,?,?);',(request.form['category'], request.form['area'],request.form['year'],request.form['month'],request.form['day'],request.form['title'] ,request.form['content']))
+    Category = request.form['category']
+    Area = request.form['area']
+    Title = request.form['title']
+    Content = request.form['content']
+    Year = request.form['year']
+    Month = request.form['month']
+    Day = request.form['day']
+    #Id = request.form['category']
+    g.db.execute('insert into localcomm (w_category,w_area,w_title,w_content,w_year,w_month,w_day) values (?,?,?,?,?,?,?);',(Category,Area,Title,Content,Year,Month,Day,));
     g.db.commit()
     return redirect(url_for('localcomm'))
+    
 
 
 
@@ -349,6 +361,8 @@ if __name__ == '__main__':
     #init_db()
     #init_bookmark()
     #init_commdb()
+    connect_db()
+    init_commdb()
     app.debug=True
     app.run(port=5000)
 

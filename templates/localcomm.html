@@ -1,4 +1,18 @@
 {% extends "community.html" %}
 {% block board %}
+<ul class=entries>
+{% for entry in entries %} <li>
+{{ entry.w_category }}
+{{ entry.w_area }} 
+{{ entry.w_title }}
+{{ entry.w_content }}
+{{ entry.w_year }}
+{{ entry.w_month }}
+{{ entry.w_day }}
+<hr>
+{% else %}
+<li>
+<em>Unbelievable. No entries here so far</em>
+{% endfor %} </ul>
 
 {% endblock %} 
