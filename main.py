@@ -2,6 +2,9 @@ from flask import Flask, url_for,render_template, request,session,g,redirect,\
     abort,flash
 import xml.etree.ElementTree as ET
 import sqlite3
+import time
+
+
 
 app = Flask(__name__)
 
@@ -320,17 +323,25 @@ def add():
 
 @app.route('/adding', methods=['POST'])
 def adding():
+    now = time.localtime()
     Category = request.form['category']
     Area = request.form['area']
     Title = request.form['title']
     Content = request.form['content']
-    Year = request.form['year']
-    Month = request.form['month']
-    Day = request.form['day']
+    Year = now.tm_year
+    Month = now.tm_mon
+    Day = now.tm_mday
     #Id = request.form['category']
     g.db.execute('insert into localcomm (w_category,w_area,w_title,w_content,w_year,w_month,w_day) values (?,?,?,?,?,?,?);',(Category,Area,Title,Content,Year,Month,Day,));
     g.db.commit()
     return redirect(url_for('localcomm'))
+
+@app.route('/showpost',methods=['POST'])
+def showpost():
+    shownum=request.form['num']
+    cur = g.db.execute('select w_category,w_area,w_title,w_content,w_year,w_month,w_day,w_num from localcomm where w_num=(?);',(shownum,))
+    entries = [dict(w_category=row[0], w_area=row[1],w_title=row[2],w_content=row[3],w_year=row[4],w_month=row[5],w_day=row[6],w_num=row[7]) for row in cur.fetchall()]
+    return render_template('showpost.html', entries = entries)
     
 
 
@@ -361,8 +372,8 @@ if __name__ == '__main__':
     #init_db()
     #init_bookmark()
     #init_commdb()
-    connect_db()
-    init_commdb()
+    #connect_db()
+    #init_commdb()
     app.debug=True
     app.run(port=5000)
 

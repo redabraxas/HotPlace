@@ -1,18 +1,37 @@
 {% extends "community.html" %}
 {% block board %}
-<ul class=entries>
-{% for entry in entries %} <li>
-{{ entry.w_category }}
-{{ entry.w_area }} 
-{{ entry.w_title }}
-{{ entry.w_content }}
-{{ entry.w_year }}
-{{ entry.w_month }}
-{{ entry.w_day }}
-<hr>
-{% else %}
-<li>
-<em>Unbelievable. No entries here so far</em>
-{% endfor %} </ul>
+<div id = "communityboard">
+<CENTER><ul class=entries>
+	<table width=900 border=0 cellspacing =0>
+   		<tr>
+   			<th>category</th>
+   			<th width=80>area</th>
+   			<th width=350>title</th>
+   			<th width=150>writer</th>
+   			<th width=100>date</th>
+   		</tr>
+   		{% for entry in entries %}
+   		<tr>
+   			<td style="color:#6B66FF;">{{ entry.w_category }}</td>
+   			<td style="color:#F361A6;">{{ entry.w_area }}</td>
+   			<td style="text-align:left;">&nbsp;&nbsp;&nbsp;&nbsp;<a href="{{ url_for('showpost') }}">{{ entry.w_title }}<a></td>
+   			<td>{{ entry.w_num }}</th>
+   			<td style="color:#6F6F6F;font-weight: lighter;">{{ entry.w_year }}-{{ entry.w_month }}-{{ entry.w_day }}</td>
+   		</tr>
+
+   			
+		{% else %}
+		<li><em>Unbelievable. No entries here so far</em></li>
+		{% endfor %}
+	</table>
+	</ul>
+	
+	<div class=bt>
+		<a href="{{ url_for('add') }}"><input type=button value=글쓰기></a>
+	</div>
+</CENTER>
+
+	 
+</div>
 
 {% endblock %} 
