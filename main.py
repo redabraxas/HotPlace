@@ -389,7 +389,7 @@ def logout():
 @app.route('/localcomm')
 def localcomm():
     cur = g.db.execute('select w_category,w_area,w_title,w_content,w_year,w_month,w_day,w_num from localcomm order by w_num desc')
-    entries = [dict(w_category=row[0], w_area=row[1],w_title=row[2],w_content=row[3],w_year=row[4],w_month=row[5],w_day=row[6],w_num=row[7]) for row in cur.fetchall()]
+    entries = [dict(w_category=row[0], w_area=row[1],w_title=row[2],w_content=row[3],w_year=row[4],w_month=row[5],w_day=row[6],num=row[7]) for row in cur.fetchall()]
     print(entries)
     return render_template('localcomm.html', entries = entries)
     
@@ -416,13 +416,12 @@ def adding():
     g.db.commit()
     return redirect(url_for('localcomm'))
 
-@app.route('/showpost',methods=['POST'])
-def showpost():
-    shownum=request.form['num']
-    cur = g.db.execute('select w_category,w_area,w_title,w_content,w_year,w_month,w_day,w_num from localcomm where w_num=(?);',(shownum,))
-    entries = [dict(w_category=row[0], w_area=row[1],w_title=row[2],w_content=row[3],w_year=row[4],w_month=row[5],w_day=row[6],w_num=row[7]) for row in cur.fetchall()]
-    return render_template('showpost.html', entries = entries)
-    
+@app.route('/showpost/<wnum>', methods=['POST'])
+def showpost(wnum):
+    num=int(wnum);
+    cur = g.db.execute('select w_category,w_area,w_title,w_content,w_year,w_month,w_day,w_num from localcomm where w_num=num;')
+    entries2 = [dict(w_category=row[0], w_area=row[1],w_title=row[2],w_content=row[3],w_year=row[4],w_month=row[5],w_day=row[6],w_num=row[7]) for row in cur.fetchall()]
+    return render_template('showpost.html', entries2 = entries2)
 
 
 

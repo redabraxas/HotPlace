@@ -11,15 +11,21 @@
    			<th width=100>date</th>
    		</tr>
    		{% for entry in entries %}
+
    		<tr>
    			<td style="color:#6B66FF;">{{ entry.w_category }}</td>
    			<td style="color:#F361A6;">{{ entry.w_area }}</td>
-   			<td style="text-align:left;">&nbsp;&nbsp;&nbsp;&nbsp;<a href="{{ url_for('showpost') }}">{{ entry.w_title }}<a></td>
-   			<td>{{ entry.w_num }}</th>
+   			<td style="text-align:left;">&nbsp;&nbsp;&nbsp;&nbsp;
+               
+               <a href="{{ url_for('showpost',wnum=entry.num) }}">
+
+                 {# <a href="{{ url_for('showpost') }}/"+entry.num>#}
+               {{ entry.w_title }}
+               <a></td>
+   			<td>{{ entry.num }}</th>
    			<td style="color:#6F6F6F;font-weight: lighter;">{{ entry.w_year }}-{{ entry.w_month }}-{{ entry.w_day }}</td>
    		</tr>
 
-   			
 		{% else %}
 		<li><em>Unbelievable. No entries here so far</em></li>
 		{% endfor %}

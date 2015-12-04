@@ -1,4 +1,15 @@
 {% extends "community.html" %}
-{% block board %}
+{% block board %}<ul class=entries>
+<h1>
+	{% for entry in entries2 %}
+{{ entry.w_category }} 
+{{ entry.w_area }} 
+
+
+
+{{ entry.w_title }} 
+{{ entry.w_num }}
+<% endfor %></h1>
+</ul>
 
 {% endblock %} 
