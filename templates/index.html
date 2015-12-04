@@ -27,14 +27,22 @@
 				<ul class="menu">
 					 <a href="{{ url_for('index') }}"> <li class="menu-item">  Map  </li> <a>
 					 <a href="{{ url_for('community') }}"> <li class="menu-item">  Community </li>  <a>  
+					 {% if not session.logged_in %}
+                    <a href="{{ url_for('login') }}"> <li class="menu-item">  Login </li>  </a>
+                    {% else %}  
+                    <a href="{{ url_for('logout') }}"> <li class="menu-item">  Logout </li>  </a>  
+                    {% endif %}
 				</ul>
 			</div>
 
 		</div>
 
+
 			
 		<div id="content">
-
+            {% for message in get_flashed_messages() %}
+            <div class=flash>{{ message }}</div>
+            {% endfor %}
             {% block body %}
 
 			<div id="map" style="border:1px solid #000;"></div>

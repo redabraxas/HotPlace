@@ -1,16 +1,21 @@
-from flask import Flask, url_for,render_template, request,session,g,redirect,\
-    abort,flash
+﻿from flask import Flask, url_for,render_template, request,session,g,redirect,\,
+    abort,flash,Markup
 import xml.etree.ElementTree as ET
 import sqlite3
 import time
 
 
 
-app = Flask(__name__)
-
 #configuration
 DATABASE='test.db'
+DEBUG=True
+SECRET_KEY='development key'
+USERNAME='admin'
+PASSWORD='default'
+
+app = Flask(__name__)
 app.config.from_object(__name__) #대문자로 설정된 값들을 config에 추가
+
 
 def connect_db():
     return sqlite3.connect(app.config['DATABASE'])
@@ -96,6 +101,17 @@ def init_db():
         insertsql='''insert into population values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?);'''
         cur.execute(insertsql,(num,p_year,p_month,p_day,isholiday,p_time,location,mapx,mapy,weather,man10,man20,man30,man40,man50,woman10,woman20,woman30,woman40,woman50))
         con.commit()
+
+def init_userdb():
+    db=connect_db()
+    userSql = '''create table if not exists user(
+    id string primary key,
+    passwd string not null,
+    nick string not null
+    );
+    '''
+    db.cursor().execute(userSql)
+    db.commit()
 
 def init_bookmark():
     #con=sqlite3.connect("test.db")
@@ -299,11 +315,75 @@ def map():
 
 
 
+
 # 로그인
-@app.route('/login')
-@app.route('/login/<name>')
-def hello(name=None):
-    return render_template('login.html', name=name)
+@app.route('/login',methods=['GET','POST'])
+def login():
+    if request.method=='GET':
+        return render_template('login.html')
+    if request.method == 'POST':
+        query="select id, passwd, nick from user where (id = '" +request.form['id']+ "') and (passwd = '" +request.form['passwd']+"')"
+        cur=g.db.execute(query)
+        row=cur.fetchone()
+
+        if row==None:
+            flash('아이디와 비밀번호를 확인해주세요.')
+            return redirect(url_for('login'))
+        else:
+            session['logged_in'] = True
+            session['nick']=row[2]
+            flash('You were logged in')
+            return redirect(url_for('index'))
+
+
+#회원가입
+@app.route('/join',methods=['GET','POST'])
+def join():
+    if request.method=='GET':
+        return render_template('join.html')
+    elif request.method=='POST':
+        #logid=request.form['id']
+        #logpass=request.form['passwd']
+        #lognick=request.form['nick']
+
+        query="select id from user where id = '" +request.form['id']+ "'";
+        query2="select nick from user where nick = '" +request.form['nick']+ "'";
+        
+        #아이디 중복체크
+        cur=g.db.execute(query)
+        row=cur.fetchone()
+
+        #닉네임 중복체크
+        cur2=g.db.execute(query2)
+        row2=cur2.fetchone()
+
+        print(row)
+        if row!=None:
+            flash('동일한 아이디가 이미 존재합니다.')
+            return redirect(url_for('join'))
+        elif row2!=None:
+            flash('동일한 닉네임이 이미 존재합니다.')
+            return redirect(url_for('join'))
+        else:
+            g.db.execute('insert into user(id,passwd,nick) values(?,?,?)',
+                         [request.form['id'],request.form['passwd'],request.form['nick']])
+            g.db.commit()
+            flash('회원가입이 완료되었습니다.')
+            return redirect(url_for('index'))
+        
+        #return render_template('join.html')
+    else:
+        abort(405)
+    #if not session.get('logged_in'):
+    #    abort(401)
+    
+
+#로그아웃
+@app.route('/logout')
+def logout():
+    session.pop('logged_in',None)
+    flash('You were logged out')
+    return redirect(url_for('index'))
 
 #######start local community part #######
 @app.route('/localcomm')
@@ -370,6 +450,7 @@ def hello3():
 
 if __name__ == '__main__':
     #init_db()
+    #init_userdb()
     #init_bookmark()
     #init_commdb()
     #connect_db()

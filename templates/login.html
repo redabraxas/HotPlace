@@ -1,18 +1,22 @@
 {% extends "index.html" %}
 {% block body %}
 
-<h2>Login</h2>
-<!--{% for message in get_flashed_messages() %}
-<div class=flash>{{ message }}</div>
-{% endfor %}-->
+<form action="{{ url_for('login') }}" method=post>
+    <table style='margin:0 auto; margin-top:5%;'>
+        <tr>
+            <th colspan=2>로그인</th>
+        </tr>
+        <tr>
+            <td><input type=text name=id size=16 placeholder=아이디 /></td>
+            <td rowspan=2><input type=submit value=로그인 style='height:50px;' /></td>
+        </tr>
+        <tr>
+            <td><input type=password name=passwd size=16 placeholder=비밀번호 /></td>
+        </tr>
+        <tr>
+            <td><a href="{{ url_for('join') }}">등록</a></td>
+        </tr>
+    </table>
+</form>
 
-    <form action="{{ url_for('login') }}" method=post>
-        <dl>
-            <dt>ID:
-            <dd><input type=text name= id>
-            <dt>Password:
-            <dd><input type=password name=passwd>
-            <dd><input type=submit value=Login>
-        </dl>
-    </form>
 {% endblock %}
