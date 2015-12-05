@@ -1,7 +1,11 @@
 {% extends "community.html" %}
 {% block board %}
 <div id = "communityboard">
-<CENTER><ul class=entries>
+<CENTER>
+<div class = "boardtitle">
+   <span><strong><i>LOCAL COMMUNITY</i></strong></span><span style="font-size:10pt;"><i>지역별게시판</i></span>
+</div>
+<ul class=entries>
 	<table width=900 border=0 cellspacing =0>
    		<tr>
    			<th>category</th>
@@ -22,7 +26,7 @@
                  {# <a href="{{ url_for('showpost') }}/"+entry.num>#}
                {{ entry.w_title }}
                <a></td>
-   			<td>{{ entry.num }}</th>
+   			<td>{{ entry.w_userid }}</th>
    			<td style="color:#6F6F6F;font-weight: lighter;">{{ entry.w_year }}-{{ entry.w_month }}-{{ entry.w_day }}</td>
    		</tr>
 

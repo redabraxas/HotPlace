@@ -1,15 +1,26 @@
 {% extends "community.html" %}
-{% block board %}<ul class=entries>
+
+{% block board %}
+{% for entry2 in entries2 %}
+<ul class=entries>
 <h1>
-	{% for entry in entries2 %}
-{{ entry.w_category }} 
-{{ entry.w_area }} 
+
+{{ entry2.w_category }} 
+{{ entry2.w_area }} 
+{{ entry2.w_year }}-{{ entry2.w_month }}-{{ entry2.w_day }} 
 
 
+{{ entry2.w_title }} 
+{{ entry2.w_content }} 
+{{ entry2.userid }}
 
-{{ entry.w_title }} 
-{{ entry.w_num }}
-<% endfor %></h1>
+</h1>
 </ul>
+{% if session.logged_in %}
+
+	 <a href="{{ url_for('delpost',wnum=entry2.num) }}"><input type=button value="글삭제"></a> 
+{% endif %}
+
+{% endfor %}
 
 {% endblock %} 
