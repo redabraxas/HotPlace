@@ -332,7 +332,7 @@ def login():
         else:
             session['logged_in'] = True
             session['nick']=row[2]
-            flash('You were logged in')
+            #flash('You were logged in')
             return redirect(url_for('index'))
 
 
@@ -382,7 +382,7 @@ def join():
 @app.route('/logout')
 def logout():
     session.pop('logged_in',None)
-    flash('You were logged out')
+    #flash('You were logged out')
     return redirect(url_for('index'))
 
 #######start local community part #######
@@ -473,7 +473,6 @@ if __name__ == '__main__':
     #init_bookmark()
     #init_commdb()
     #connect_db()
-    #init_commdb()
     app.debug=True
     app.run(port=5000)
 

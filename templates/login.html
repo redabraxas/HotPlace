@@ -7,14 +7,15 @@
             <th colspan=2>로그인</th>
         </tr>
         <tr>
-            <td><input type=text name=id size=16 placeholder=아이디 /></td>
-            <td rowspan=2><input type=submit value=로그인 style='height:50px;' /></td>
+            <td>아이디</td>
+            <td><input type='text' size='17' name='id' placeholder='아이디' /></td>
         </tr>
         <tr>
-            <td><input type=password name=passwd size=16 placeholder=비밀번호 /></td>
+            <td>비밀번호</td>
+            <td><input type='password' size='17' name='passwd' placeholder='비밀번호' /></td>
         </tr>
         <tr>
-            <td><a href="{{ url_for('join') }}">등록</a></td>
+            <td colspan='2' style='text-align:center;'><input type='submit' value='로그인' /></td>
         </tr>
     </table>
 </form>
