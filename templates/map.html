@@ -11,7 +11,70 @@
 			<script type="text/javascript" src="http://openapi.map.naver.com/openapi/naverMap.naver?ver=2.0&key=7f988a1d3bc4b0767fef224ef85d1743"></script>
 
 
+
+
+
 			<script type="text/javascript">
+
+            function setOnMapMarker(bounds, pointList, infoList){
+
+            
+                oMap.clearOverlay();
+                var minposX = bounds[0].x;
+                var maxposX = bounds[1].x;
+                var minposY = bounds[1].y;
+                var maxposY = bounds[0].y;
+
+            
+                var oOffset = new nhn.api.map.Size(14, 37);
+
+                var oIcon1 = new nhn.api.map.Icon( "{{ url_for('static',filename='img/rankTop.png') }}",  {width : 80, height : 80} , oOffset);
+                var oIcon2 = new nhn.api.map.Icon( "{{ url_for('static',filename='img/rankMiddle.png') }}",  {width : 50, height : 50}, oOffset);
+                var oIcon3 = new nhn.api.map.Icon( "{{ url_for('static',filename='img/rankExtra.png') }}",  {width : 20, height : 20}, oOffset);
+
+
+            
+
+
+                 var rank =0;   
+
+
+
+
+                for ( var i =0, len=pointList.length; i<len; i++){
+
+                    var point = pointList[i].toLatLng();
+
+
+                    if(minposX < point.getX() && point.getX() < maxposX &&
+                    minposY < point.getY() && point.getY() < maxposY ){
+
+
+                        var oMarker;
+
+                        if( rank < 1){
+
+                            oMarker = new nhn.api.map.Marker(oIcon1, { title : '1위' }); 
+                        }else if( rank>1 && rank<5){
+                            oMarker = new nhn.api.map.Marker(oIcon2, { title : '2위' }); 
+                        }else{
+                            oMarker = new nhn.api.map.Marker(oIcon3, { title : '3위' }); 
+                            
+                        }
+
+                        oMarker.setTitle(infoList[i].toString());
+                        oMarker.setPoint(point);
+                        oMap.addOverlay(oMarker);
+
+                        rank++;
+                    }
+
+
+                }
+
+
+
+            }
 
 
                 var oSeoulCityPoint = new nhn.api.map.TM128(307677,549510);   
@@ -58,66 +121,51 @@
 
 
               
-                // 마커의 사이즈와 오프셋 아이콘 지쩡 
-                var oSize1 = new nhn.api.map.Size(14, 37);
-                var oSize2 = new nhn.api.map.Size(28, 37);
-                var oSize3 = new nhn.api.map.Size(14, 37);
-
-                var oOffset = new nhn.api.map.Size(14, 37);
-
-                var oIconYellow = new nhn.api.map.Icon( "{{ url_for('static',filename='img/yellow.png') }}", oSize1, oOffset);
-                var oIconRed = new nhn.api.map.Icon( "{{ url_for('static',filename='img/red2.png') }}", oSize2, oOffset);
-                var oIconRed3 = new nhn.api.map.Icon( "{{ url_for('static',filename='img/red2.png') }}", oSize3, oOffset);
-
-
-                // 정보 창 
-                var oInfoWnd = new nhn.api.map.InfoWindow();
-                oInfoWnd.setVisible(false);
-                oMap.addOverlay(oInfoWnd);
-
-                oInfoWnd.setPosition({
-                        top : 20,
-                        left :20
-                });
-
-        
-                var index =0;
-                // 쿼리에서 온 거 마커 표시하기 
+            
+                var pointList = new Array();
+                var infoList = new Array();
+                // 쿼리에서 온 거 마커리스트 생성
                 {% for entry in entries %}
-                    
+
                     var point = new nhn.api.map.TM128({{entry.mapx}}, {{entry.mapy}});
 
+                    pointList.push(point); 
 
-                    if( 0<= index  && index <=10){
+                    var str = "10대 남자: "+{{ entry.man10 }}+
+                            "<br>20대 남자:"+{{ entry.man20 }}+
+                            "<br>30대 남자:"+{{ entry.man30 }}+
+                            "<br>40대 남자:"+{{ entry.man40 }}+
+                            "<br>50대 남자:"+{{ entry.man50 }}+
+                            "<br>10대 여자:"+{{ entry.woman10 }}+
+                            "<br>20대 여자:"+{{ entry.woman20 }}+
+                            "<br>30대 여자:"+{{ entry.woman30 }}+
+                            "<br>40대 여자:"+{{ entry.woman40 }}+
+                            "<br>50대 여자:"+{{ entry.woman50 }};
 
-                         var oMarkerYellow = new nhn.api.map.Marker(oIconYellow, { title : '1위' }); 
-                         oMarkerYellow.setPoint(point);
-                        oMap.addOverlay(oMarkerYellow);
-                    }else if(10 <= index && index <=20 ){
-                        var oMarkerRed = new nhn.api.map.Marker(oIconRed, { title : '2위' }); 
-                        oMarkerRed.setPoint(point);
-                        oMap.addOverlay(oMarkerRed);
-                    }else{
-                        var oMarkerYellow = new nhn.api.map.Marker(oIconYellow, { title : '3위' }); 
-                        oMarkerYellow.setPoint(point);
-                        oMap.addOverlay(oMarkerYellow);
-                    }
-                  
-                    index++;
-
-                    
+                    infoList.push(str);
 
                 {% endfor %} 
 
 
-                // // 마커라벨 표시
-                // var oLabel1 = new nhn.api.map.MarkerLabel(); // 마커 라벨 선언
-                // oMap.addOverlay(oLabel1);// 마커 라벨 지도에 추가. 기본은 라벨이 보이지 않는 상태로 추가됨
-                // oLabel1.setVisible(true, oMarker);// 마커 라벨 보이기 
+                // 마커 추가 함수
+                setOnMapMarker(oMap.getBound(), pointList, infoList);
 
 
-                var oLabel = new nhn.api.map.MarkerLabel(); // - 마커 라벨 선언.
-                oMap.addOverlay(oLabel); // - 마커 라벨 지도에 추가. 기본은 라벨이 보이지 않는 상태로 추가됨.
+
+
+                // 인포윈도우
+
+                var oInfoWnd = new nhn.api.map.InfoWindow();
+                 oInfoWnd.setVisible(false);
+                 oMap.addOverlay(oInfoWnd);
+                 
+                  
+                  oInfoWnd.setPosition({
+                      top : 20,
+                      left :20
+                  });
+
+
 
 
 
@@ -129,7 +177,8 @@
                 
                
 
-                oMap.attach('mouseenter', function(oCustomEvent) {
+
+               oMap.attach('mouseenter', function(oCustomEvent) {
 
                         var oTarget = oCustomEvent.target;
                         // 마커위에 마우스 올라간거면
@@ -148,7 +197,61 @@
                         }
                 });
 
-             
+
+                oMap.attach('click', function(oCustomEvent) {
+   
+                        var oPoint = oCustomEvent.point;
+                        var oTarget = oCustomEvent.target;
+                        oInfoWnd.setVisible(false);
+
+                        // 마커 클릭하면
+                        if (oTarget instanceof nhn.api.map.Marker) {
+                                // 겹침 마커 클릭한거면
+                                // if (oCustomEvent.clickCoveredMarker) {
+                                //         return;
+                                // }
+                              
+
+                               
+                                oInfoWnd.setContent('<DIV style="border-top:1px solid; border-bottom:2px groove black; border-left:1px solid; border-right:2px groove black;margin-bottom:1px;color:black;background-color:white; width:auto; height:auto;">'+
+                                        '<span style="color: #000000 !important;display: inline-block;font-size: 12px !important;font-weight: bold !important;letter-spacing: -1px !important;white-space: nowrap !important; padding: 2px 5px 2px 2px !important">' + 
+                                         oTarget.getTitle()
+                                        +'<span></div>');
+
+
+                                oInfoWnd.setPoint(oTarget.getPoint());
+                                //oInfoWnd.setPosition({right : 15, top : 30});
+                                 oInfoWnd.setPosition({
+                                      top : 20,
+                                      left :20
+                                  });
+
+
+                                oInfoWnd.setVisible(true);
+                                oInfoWnd.autoPosition();
+                                
+
+
+                                
+                        }else{
+                            setOnMapMarker(oMap.getBound(), pointList, infoList);
+
+                        }
+
+                        oMap.addOverlay(oInfoWnd);
+                      
+                       
+                });
+
+
+                oMap.attach('mousewheel', function(oCustomEvent) {
+
+                    setOnMapMarker(oMap.getBound(), pointList, infoList);
+                    oMap.addOverlay(oInfoWnd);
+                        
+                });
+
+            
 
 
         	</script>

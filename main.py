@@ -311,7 +311,8 @@ def map():
             'sex' :request.form.getlist('sex', None),
             'age' : request.form.getlist('age[]', None),
             'month' : request.form.getlist('month', None),
-            'time' : request.form.getlist('time', None)
+            'time' : request.form.getlist('time', None),
+            'addr' : request.form['addr']
         }
 
         addr = request.form['addr']
@@ -337,23 +338,12 @@ def map():
             }
 
 
-
         else :
             point = {
                 'x' : 307677,
                 'y' : 549510
             }
         
-        
-
-
-           
-       
-
-      
-
-        
-
         entries= getSearchMap(data=data);
         return render_template('map.html', data=data, entries=entries, point= point)
     else:
