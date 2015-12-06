@@ -256,7 +256,7 @@ def getSearchMap(data):
     
     #and 제거
     where_query = where_query[:len(where_query)-5]
-    where_query+= "order by maxpop desc;"
+    where_query+= " order by maxpop desc;"
 
     #부속질의문 사용
     #man10 - woman50
