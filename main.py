@@ -22,13 +22,13 @@ def connect_db():
 def init_commdb():
     con=sqlite3.connect("test.db")
     cur=con.cursor()
-    userSql = '''create table if not exists user(
-        id varchar(20) not null,
-        passwd varchar(20),
-        nick varchar(20),
-        primary key (id)
+    #userSql = '''create table if not exists user(
+    #    id varchar(20) not null,
+    #    passwd varchar(20),
+    #    nick varchar(20),
+    #    primary key (id)
 
-        );'''
+    #    );'''
 
     localCommSql='''create table if not exists localcomm(
         w_category varchar(10),
@@ -51,7 +51,7 @@ def init_commdb():
         r_day integer,
         foreign key(r_userid) references user(id) ON UPDATE CASCADE
         );'''
-    cur.execute(userSql)
+    #cur.execute(userSql)
     cur.execute(localCommSql)
 
     cur.execute(localReplySql)
