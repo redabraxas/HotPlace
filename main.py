@@ -3,8 +3,10 @@
 import xml.etree.ElementTree as ET
 import sqlite3
 import time
-
-
+from urllib.request import urlopen
+from urllib.parse import urljoin, urlencode
+from bs4 import BeautifulSoup
+import json
 
 #configuration
 DATABASE='test.db'
@@ -159,123 +161,126 @@ def read_db():
 def getSearchMap(data):
 
     # data.sex, data.age, data.month, data.time -> 전부 리스트 타입으로 사용자가 택한 값만 들어있습니다.
-    # ex) data['sex'] = [man, woman]  data.age=[10,40] data.month =[1,5,6]  data.time=[afternoon, evening]
+    # ex) data['sex'] = [man, woman]  data.age=[0,0,0,10,40] data.month =[1,5,6]  data.time=[afternoon, evening]
     
-    ageflag = [0]*10
-    where_query = "where "
-    for i in range(len(data['sex'])):
-        sextemp = data['sex'].pop()
-        if('man' == sextemp):
-            agecount=5
-            agesize = len(data['age'])
-            for i in range(agesize):
-                #마지막 원소를 첫원소에 저장
-                agetemp2 = data['age'].pop()
-                data['age'].insert(0,agetemp2)
-                if(agetemp2 == 0):
-                    agecount=agecount-1
-                    continue
-                else:
-                    agetemp = str(agetemp2)
-                    if(5 == agecount):
-                        where_query+='man50>'
-                        where_query+=agetemp
-                        where_query+=' and '
-                        ageflag[0]=1;
-                    elif(4 == agecount):
-                        where_query+='man40>'
-                        where_query+=agetemp
-                        where_query+=' and '
-                        ageflag[1]=1;
-                    elif(3 == agecount):
-                        where_query+='man30>'
-                        where_query+=agetemp
-                        where_query+=' and '
-                        ageflag[2]=1;
-                    elif(2 == agecount):
-                        where_query+='man20>'
-                        where_query+=agetemp
-                        where_query+=' and '
-                        ageflag[3]=1;
-                    elif(1 == agecount):
-                        where_query+='man10>'
-                        where_query+=agetemp
-                        where_query+=' and '
-                        ageflag[4]=1;
-                    agecount=agecount-1
+    # ageflag = [0]*10
+    # where_query = "where "
+    # for i in range(len(data['sex'])):
+    #     sextemp = data['sex'].pop()
+    #     if('man' == sextemp):
+    #         agecount=5
+    #         agesize = len(data['age'])
+    #         for i in range(agesize):
+    #             #마지막 원소를 첫원소에 저장
+    #             agetemp2 = data['age'].pop()
+    #             data['age'].insert(0,agetemp2)
+    #             if(agetemp2 == 0):
+    #                 agecount=agecount-1
+    #                 continue
+    #             else:
+    #                 agetemp = str(agetemp2)
+    #                 if(5 == agecount):
+    #                     where_query+='man50>'
+    #                     where_query+=agetemp
+    #                     where_query+=' and '
+    #                     ageflag[0]=1;
+    #                 elif(4 == agecount):
+    #                     where_query+='man40>'
+    #                     where_query+=agetemp
+    #                     where_query+=' and '
+    #                     ageflag[1]=1;
+    #                 elif(3 == agecount):
+    #                     where_query+='man30>'
+    #                     where_query+=agetemp
+    #                     where_query+=' and '
+    #                     ageflag[2]=1;
+    #                 elif(2 == agecount):
+    #                     where_query+='man20>'
+    #                     where_query+=agetemp
+    #                     where_query+=' and '
+    #                     ageflag[3]=1;
+    #                 elif(1 == agecount):
+    #                     where_query+='man10>'
+    #                     where_query+=agetemp
+    #                     where_query+=' and '
+    #                     ageflag[4]=1;
+    #                 agecount=agecount-1
                 
-        elif('woman' == sextemp):
-            agecount=5
-            agesize = len(data['age'])
-            for i in range(agesize):
-                agetemp2 = data['age'].pop()
-                data['age'].insert(0,agetemp2)
-                if(agetemp2 == 0):
-                    agecount=agecount-1
-                    continue
-                else:
-                    agetemp = str(agetemp2)
-                    if(5 == agecount):
-                        where_query+='woman50>'
-                        where_query+=agetemp
-                        where_query+=' and '
-                        ageflag[5]=1;
-                    elif(4 == agecount):
-                        where_query+='woman40>'
-                        where_query+=agetemp
-                        where_query+=' and '
-                        ageflag[6]=1;
-                    elif(3 == agecount):
-                        where_query+='woman30>'
-                        where_query+=agetemp
-                        where_query+=' and '
-                        ageflag[7]=1;
-                    elif(2 == agecount):
-                        where_query+='woman20>'
-                        where_query+=agetemp
-                        where_query+=' and '
-                        ageflag[8]=1;
-                    elif(1 == agecount):
-                        where_query+='woman10>'
-                        where_query+=agetemp
-                        where_query+=' and '
-                        ageflag[9]=1;
-                    agecount=agecount-1                
-    for i in range(len(data['month'])):
-        where_query+='p_month='
-        where_query+=str(data['month'].pop())
-        where_query+=' and '
-    for i in range(len(data['time'])):
-        timetemp = data['time'].pop() 
-        where_query+='p_time like'
-        if('afternoon' == timetemp):
-            where_query+=" '%12시%'"
-        elif('evening' == timetemp):
-            where_query+=" '%19시%'"    
-        where_query+=' and '
+    #     elif('woman' == sextemp):
+    #         agecount=5
+    #         agesize = len(data['age'])
+    #         for i in range(agesize):
+    #             agetemp2 = data['age'].pop()
+    #             data['age'].insert(0,agetemp2)
+    #             if(agetemp2 == 0):
+    #                 agecount=agecount-1
+    #                 continue
+    #             else:
+    #                 agetemp = str(agetemp2)
+    #                 if(5 == agecount):
+    #                     where_query+='woman50>'
+    #                     where_query+=agetemp
+    #                     where_query+=' and '
+    #                     ageflag[5]=1;
+    #                 elif(4 == agecount):
+    #                     where_query+='woman40>'
+    #                     where_query+=agetemp
+    #                     where_query+=' and '
+    #                     ageflag[6]=1;
+    #                 elif(3 == agecount):
+    #                     where_query+='woman30>'
+    #                     where_query+=agetemp
+    #                     where_query+=' and '
+    #                     ageflag[7]=1;
+    #                 elif(2 == agecount):
+    #                     where_query+='woman20>'
+    #                     where_query+=agetemp
+    #                     where_query+=' and '
+    #                     ageflag[8]=1;
+    #                 elif(1 == agecount):
+    #                     where_query+='woman10>'
+    #                     where_query+=agetemp
+    #                     where_query+=' and '
+    #                     ageflag[9]=1;
+    #                 agecount=agecount-1                
+    # for i in range(len(data['month'])):
+    #     where_query+='p_month='
+    #     where_query+=str(data['month'].pop())
+    #     where_query+=' and '
+    # for i in range(len(data['time'])):
+    #     timetemp = data['time'].pop() 
+    #     where_query+='p_time like'
+    #     if('afternoon' == timetemp):
+    #         where_query+=" '%12시%'"
+    #     elif('evening' == timetemp):
+    #         where_query+=" '%19시%'"    
+    #     where_query+=' and '
     
-    #and 제거
-    where_query = where_query[:len(where_query)-5]
-    where_query+= " order by maxpop desc;"
 
-    #부속질의문 사용
-    #man10 - woman50
-    where_query2 = "(select Max("
-    agetemp2=0
-    for i in range(10):
-        if(ageflag[i]==1):
-            if(i>=5):
-                agetemp2=50
-                where_query2+="wo"
-            where_query2+="man"
-            where_query2+=str(50-i*10+agetemp2)
-            where_query2+=", "
-    #쉼표 제거
-    where_query2 = where_query2[:len(where_query2)-2]
-    where_query2+=")) as maxpop"
+    # #and 제거
+    # where_query = where_query[:len(where_query)-5]
+    # where_query+= " order by maxpop desc;"
+
+    # #부속질의문 사용
+    # #man10 - woman50
+    # where_query2 = "(select Max("
+    # agetemp2=0
+    # for i in range(10):
+    #     if(ageflag[i]==1):
+    #         if(i>=5):
+    #             agetemp2=50
+    #             where_query2+="wo"
+    #         where_query2+="man"
+    #         where_query2+=str(50-i*10+agetemp2)
+    #         where_query2+=", "
+    # #쉼표 제거
+    # where_query2 = where_query2[:len(where_query2)-2]
+    # where_query2+=")) as maxpop"
+
     
-    cur = g.db.execute('select *, '+where_query2+' from population '+where_query)
+    #cur = g.db.execute('select *, '+where_query2+' from population '+where_query)
     #부속질의문 사용 끝
+    cur = g.db.execute('select * from population where man10>100')
     
     entries = [dict(year=row[1], month=row[2],  day=row[3],  time=row[5], isholiday=row[4],  
         location=row[6], mapx=row[7], mapy=row[8], weather=row[9], 
@@ -296,6 +301,8 @@ def teardown_request(exception):
 @app.route('/')
 def index():
     return render_template('map.html')
+
+
 #hhhh
 @app.route('/map/', methods=['POST'])
 def map():
@@ -307,8 +314,48 @@ def map():
             'time' : request.form.getlist('time', None)
         }
 
+        addr = request.form['addr']
+        if addr:
+            NAVERKEY  = "7f988a1d3bc4b0767fef224ef85d1743"
+
+            params = {
+                "query": addr,
+                "output": "xml",
+                "key": NAVERKEY,
+                "encoding" : "utf-8",
+                "coord" : "tm128"
+            }
+
+            queryString = urlencode(params)
+            respon = urlopen("http://openapi.map.naver.com/api/geocode?" + queryString).read().decode('utf-8')
+            
+            soup = BeautifulSoup(respon, "html.parser")
+            
+            point = {
+                'x' : soup.x.string,
+                'y' : soup.y.string
+            }
+
+
+
+        else :
+            point = {
+                'x' : 307677,
+                'y' : 549510
+            }
+        
+        
+
+
+           
+       
+
+      
+
+        
+
         entries= getSearchMap(data=data);
-        return render_template('map.html', data=data, entries=entries)
+        return render_template('map.html', data=data, entries=entries, point= point)
     else:
         return render_template('map.html')
 

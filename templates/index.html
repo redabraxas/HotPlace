@@ -154,39 +154,6 @@
                         }
                 });
 
-                oMap.attach('click', function(oCustomEvent) {
-                        var oPoint = oCustomEvent.point;
-                        var oTarget = oCustomEvent.target;
-                        oInfoWnd.setVisible(false);
-                        // 마커 클릭하면
-                        if (oTarget instanceof nhn.api.map.Marker) {
-                                // 겹침 마커 클릭한거면
-                                if (oCustomEvent.clickCoveredMarker) {
-                                        return;
-                                }
-                                // - InfoWindow 에 들어갈 내용은 setContent 로 자유롭게 넣을 수 있습니다. 외부 css를 이용할 수 있으며, 
-                                // - 외부 css에 선언된 class를 이용하면 해당 class의 스타일을 바로 적용할 수 있습니다.
-                                // - 단, DIV 의 position style 은 absolute 가 되면 안되며, 
-                                // - absolute 의 경우 autoPosition 이 동작하지 않습니다. 
-                                oInfoWnd.setContent('<DIV style="border-top:1px solid; border-bottom:2px groove black; border-left:1px solid; border-right:2px groove black;margin-bottom:1px;color:black;background-color:white; width:auto; height:auto;">'+
-                                        '<span style="color: #000000 !important;display: inline-block;font-size: 12px !important;font-weight: bold !important;letter-spacing: -1px !important;white-space: nowrap !important; padding: 2px 5px 2px 2px !important">' + 
-                                        'Hello World <br /> ' + oTarget.getPoint()
-                                        +'<span></div>');
-                                oInfoWnd.setPoint(oTarget.getPoint());
-                                oInfoWnd.setPosition({right : 15, top : 30});
-                                oInfoWnd.setVisible(true);
-                                oInfoWnd.autoPosition();
-                                return;
-                        }
-                        var oMarker = new nhn.api.map.Marker(oIcon, { title : '마커 : ' + oPoint.toString() });
-                        oMarker.setPoint(oPoint);
-                        oMap.addOverlay(oMarker);
-
-                        var aPoints = oPolyline.getPoints(); // - 현재 폴리라인을 이루는 점을 가져와서 배열에 저장.
-                        aPoints.push(oPoint); // - 추가하고자 하는 점을 추가하여 배열로 저장함.
-                        oPolyline.setPoints(aPoints); // - 해당 폴리라인에 배열에 저장된 점을 추가함
-                });
-
 		
 
 			
