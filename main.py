@@ -44,7 +44,9 @@ def init_commdb():
         w_userid varchar(20),
         foreign key (w_userid) references user(id) ON UPDATE CASCADE
         );'''
+
     localReplySql='''create table if not exists localReply(
+        r_wnum integer,
         r_num integer not null primary key autoincrement,
         r_userid varchar(20),
         r_content text,
@@ -52,8 +54,8 @@ def init_commdb():
         r_month integer,
         r_day integer,
         foreign key(r_userid) references user(id) ON UPDATE CASCADE
+        foreign key(r_wnum) references localcomm(w_num) ON UPDATE CASCADE
         );'''
-    #cur.execute(userSql)
     cur.execute(localCommSql)
 
     cur.execute(localReplySql)
@@ -472,7 +474,10 @@ def showpost(wnum):
     num=int(wnum);
     cur = g.db.execute('select w_category,w_area,w_title,w_content,w_year,w_month,w_day,w_userid,w_num from localcomm where w_num=(?);',(num,))
     entries2 = [dict(w_category=row[0], w_area=row[1],w_title=row[2],w_content=row[3],w_year=row[4],w_month=row[5],w_day=row[6],userid=row[7],num=row[8]) for row in cur.fetchall()]
-    return render_template('showpost.html', entries2 = entries2)
+    cur2 = g.db.execute('select r_userid,r_content,r_year,r_month,r_day from localReply where r_wnum=(?) order by r_num desc;',(num,))
+    entries3 = [dict(r_userid=row[0], r_content=row[1],r_year=row[2],r_month=row[3],r_day=row[4]) for row in cur2.fetchall()]
+    
+    return render_template('showpost.html', entries2 = entries2, entries3=entries3, num=num)
 
 @app.route('/delpost/<wnum>')
 def delpost(wnum):
@@ -487,8 +492,18 @@ def delpost(wnum):
     else:
         return session['nick']
 
-
-
+@app.route('/addreply/<wnum>', methods=['POST'])
+def addreply(wnum):
+    wnum=int(wnum)
+    now = time.localtime()
+    Writer = session['nick']
+    Year = now.tm_year
+    Month = now.tm_mon
+    Day = now.tm_mday
+    Content = request.form['content']
+    g.db.execute('insert into localReply (r_userid,r_content,r_year,r_month,r_day,r_wnum) values (?,?,?,?,?,?);',(Writer,Content,Year,Month,Day,wnum,));
+    g.db.commit()
+    return redirect(url_for('localcomm'))
 #######end local community part #######
 
 
@@ -515,8 +530,9 @@ if __name__ == '__main__':
     #init_db()
     #init_userdb()
     #init_bookmark()
-    #init_commdb()
     #connect_db()
+    #init_commdb()
+    
     app.debug=True
     app.run(port=5000)
 

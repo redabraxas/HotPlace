@@ -23,4 +23,36 @@
 
 {% endfor %}
 
+
+<CENTER>
+<ul class=entries>
+	<table width=900 border=0 cellspacing =0>
+   		<tr>
+   			<th width=50>writer</th>
+   			<th width=100>content</th>
+   			<th width=50>date</th>
+
+   		</tr>
+   		{% for entry in entries3 %}
+
+   		<tr>
+   			<td style="color:#6B66FF;">{{ entry.r_userid }}</td>
+   			<td style="color:#F361A6;">{{ entry.r_content}}</td>
+   			<td style="color:#6F6F6F;font-weight: lighter;">{{ entry.r_year }}-{{ entry.r_month }}-{{ entry.r_day }}</td>
+   		</tr>
+
+		{% else %}
+		<li><em>댓글이 없습니다.</em></li>
+		{% endfor %}
+	</table>
+	</ul>
+	
+	<div class=addreply>
+<form action="{{ url_for('addreply',wnum=num) }}" method=post class=addreply> <dl>
+	<dt>댓글 <input type=text size=100 name=content>
+	<dt><input type=submit value=등록>
+ </form>
+</div>
+</CENTER>
+
 {% endblock %} 
