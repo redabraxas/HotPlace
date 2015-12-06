@@ -1,0 +1,67 @@
+{% extends "index.html" %}
+{% block body %}
+
+  
+
+ 
+
+ 
+		<div id="bookmark">
+
+
+            <table> 
+                <tr> 
+                    <td> 월 <td>
+                    <td> day <td>
+                    <td> 시간대 <td>
+                    <td> 주중/주말 <td>
+                    <td> 날씨 <td>
+                    <td> 10대 남자 <td>
+                    <td> 20대 남자 <td>
+                    <td> 30대 남자 <td>
+                    <td> 40대 남자 <td>
+                    <td> 50대 남자 <td>
+                    <td> 10대 여자 <td>
+                    <td> 20대 여자 <td>
+                    <td> 30대 여자 <td>
+                    <td> 40대 여자 <td>
+                    <td> 50대 여자 <td>
+                    <td> <td>
+                </tr>
+
+                {% if entries %}
+                    {% for entry in entries %}
+
+                <tr> 
+
+           
+                    <td> {{entry.month}} <td>
+                    <td> {{entry.day}} <td>
+                    <td> {{entry.time}} <td>
+                    <td> {{entry.isholiday}} <td>
+                    <td> {{entry.weather}} <td>
+                    <td> {{entry.man10}} <td>
+                    <td> {{entry.man20}} <td>
+                    <td> {{entry.man30}} <td>
+                    <td> {{entry.man40}} <td>
+                    <td> {{entry.man50}} <td>
+                    <td> {{entry.woman10}} <td>
+                    <td> {{entry.woman20}} <td>
+                    <td> {{entry.woman30}} <td>
+                    <td> {{entry.woman40}} <td>
+                    <td> {{entry.woman50}} <td>
+                    <td> <a href="{{ url_for('clickBookmark',num=entry.b_num) }}"> 보기 </a><td>
+                </tr>
+
+
+                    {% endfor %}
+                {% else %}
+            </table>
+
+        </div>
+        
+
+
+{% endblock %}
+
+

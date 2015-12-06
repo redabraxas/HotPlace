@@ -4,6 +4,22 @@
 
 
 
+<script language='javascript'> 
+  function mySubmit(index) {
+    alert("aa");
+    if (index == 1) {
+      document.myForm.action="{{ url_for('map') }}";
+    }
+    if (index == 2) {
+      document.myForm.action="{{ url_for('addBookmark') }}";
+    }
+    document.myForm.submit();
+
+  }
+</script>
+
+
+
 			
 			<div id="map" style="border:1px solid #000;"></div>
 
@@ -258,7 +274,7 @@
 
         <div id="select_box">
 
-           <form action="{{ url_for('map') }}" method='POST' enctype='multipart/form-data'>
+           <form name='myForm' method='POST' enctype='multipart/form-data'>
                 
                 <input type='hidden' name='clinic_id' value="<?=$clinic_id?>"  > <br>
 
@@ -321,7 +337,12 @@
                 </div>
             
 
-            <input type='reset'> <input type='submit' value="검색"> <br>
+          
+            <input type="button" value="검색" onclick='mySubmit(1)' />
+            <input type="button" value="북마크 추가" onclick='mySubmit(2)' />
+
+        <!--     <input type='submit' value="검색"> 
+            <input type='submit' value="검색"> --><br>
             </form>
 
         </div>

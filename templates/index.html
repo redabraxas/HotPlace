@@ -33,6 +33,8 @@
     <a href="{{ url_for('logout') }}"> <li class="menu-item">  Logout </li>  </a>
     {% endif %}
     <a href="{{ url_for('join') }}"> <li class="menu-item">  Register </li>  <a>
+
+    <a href="{{ url_for('getBookmarkList') }}"> <li class="menu-item">  Bookmark </li>  <a>
 </ul>
 			</div>
 
@@ -46,121 +48,6 @@
             {% endfor %}
             {% block body %}
 
-			<div id="map" style="border:1px solid #000;"></div>
-
-			<script type="text/javascript" src="http://openapi.map.naver.com/openapi/naverMap.naver?ver=2.0&key=7f988a1d3bc4b0767fef224ef85d1743"></script>
-
-
-			<script type="text/javascript">
-                var oSeoulCityPoint = new nhn.api.map.LatLng(37.5675451, 126.9773356);
-                var defaultLevel = 11;
-                var oMap = new nhn.api.map.Map(document.getElementById('map'), { 
-                                                point : oSeoulCityPoint,
-                                                zoom : defaultLevel,
-                                                enableWheelZoom : true,
-                                                enableDragPan : true,
-                                                enableDblClickZoom : false,
-                                                mapMode : 0,
-                                                activateTrafficMap : false,
-                                                activateBicycleMap : false,
-                                                minMaxLevel : [ 1, 14 ]});
-                var oSlider = new nhn.api.map.ZoomControl();
-                oMap.addControl(oSlider);
-                oSlider.setPosition({
-                        top : 10,
-                        left : 10
-                });
-
-                var oMapTypeBtn = new nhn.api.map.MapTypeBtn();
-                oMap.addControl(oMapTypeBtn);
-                oMapTypeBtn.setPosition({
-                        bottom : 10,
-                        right : 80
-                });
-                
-                var oThemeMapBtn = new nhn.api.map.ThemeMapBtn();
-                oThemeMapBtn.setPosition({
-                        bottom : 10,
-                        right : 10
-                });
-                oMap.addControl(oThemeMapBtn);
-
-
-              
-                var oSize = new nhn.api.map.Size(28, 37);
-                var oOffset = new nhn.api.map.Size(14, 37);
-                var oIcon = new nhn.api.map.Icon('http://static.naver.com/maps2/icons/pin_spot2.png', oSize, oOffset);
-
-                var oInfoWnd = new nhn.api.map.InfoWindow();
-                oInfoWnd.setVisible(false);
-                oMap.addOverlay(oInfoWnd);
-
-                oInfoWnd.setPosition({
-                        top : 20,
-                        left :20
-                });
-
-
-               	// 커스텀 ㅁ ㅏ커 하는법?
-                 //아래는 위에서 지정한 좌표에 마커를 표시하는 소스 입니다.
-                var oSize = new nhn.api.map.Size(28, 37);
-                var oOffset = new nhn.api.map.Size(14, 37);
-                var oIcon = new nhn.api.map.Icon('http://i1.daumcdn.net/localimg/localimages/07/mapapidoc/marker_red.png', oSize, oOffset);
-                //icon 이미지를 바꿔서 사용할 수 있습니다.
-                var oMarker = new nhn.api.map.Marker(oIcon, { title : '마커타이틀' }); 
-                oMarker.setPoint(oSeoulCityPoint);
-                oMap.addOverlay(oMarker);
-                // 마커라벨 표시
-                var oLabel1 = new nhn.api.map.MarkerLabel(); // 마커 라벨 선언
-                oMap.addOverlay(oLabel1);// 마커 라벨 지도에 추가. 기본은 라벨이 보이지 않는 상태로 추가됨
-                oLabel1.setVisible(true, oMarker);// 마커 라벨 보이기 
-
-
-
-                var oLabel = new nhn.api.map.MarkerLabel(); // - 마커 라벨 선언.
-                oMap.addOverlay(oLabel); // - 마커 라벨 지도에 추가. 기본은 라벨이 보이지 않는 상태로 추가됨.
-
-
-
-                oInfoWnd.attach('changeVisible', function(oCustomEvent) {
-                        if (oCustomEvent.visible) {
-                                oLabel.setVisible(false);
-                        }
-                });
-                
-                var oPolyline = new nhn.api.map.Polyline([], {
-                        strokeColor : '#f00', // - 선의 색깔
-                        strokeWidth : 5, // - 선의 두께
-                        strokeOpacity : 0.5 // - 선의 투명도
-                }); // - polyline 선언, 첫번째 인자는 선이 그려질 점의 위치. 현재는 없음.
-                oMap.addOverlay(oPolyline); // - 지도에 선을 추가함.
-
-                oMap.attach('mouseenter', function(oCustomEvent) {
-
-                        var oTarget = oCustomEvent.target;
-                        // 마커위에 마우스 올라간거면
-                        if (oTarget instanceof nhn.api.map.Marker) {
-                                var oMarker = oTarget;
-                                oLabel.setVisible(true, oMarker); // - 특정 마커를 지정하여 해당 마커의 title을 보여준다.
-                        }
-                });
-
-                oMap.attach('mouseleave', function(oCustomEvent) {
-
-                        var oTarget = oCustomEvent.target;
-                        // 마커위에서 마우스 나간거면
-                        if (oTarget instanceof nhn.api.map.Marker) {
-                                oLabel.setVisible(false);
-                        }
-                });
-
-		
-
-			
-
-
-
-        	</script>
             
             {% endblock %} 
 		

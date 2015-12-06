@@ -508,22 +508,45 @@ def addreply(wnum):
 
 
 
-################### 예제 그냥 남겨놓은거 #################
-@app.route('/hello2/')
-@app.route('/hello2/<title>&<name>')
-def hello2(name=None, title=None):
-    data={
-        'title' : title,
-        'name' : name   
-    }
-    return render_template('hello2.html', **data)
 
-@app.route('/hello3/')
-def hello3():
-    data=[dict(href="http://naver.com", caption="네이버"), 
-          dict(href="http://www.google.com", caption="구글")]
-    return render_template('hello3.html', items=data)
-######################################################
+#######start bookmark part #######
+
+@app.route('/bookmark')
+def getBookmarkList():
+    # session['id'] 를 이용하여  북마크 전체 결과를 entries 에 저장 
+    
+
+    return render_template('bookmark.html', entries=entries)
+
+
+
+@app.route('/bookmark/', methods=['POST'])
+def addBookmark():
+
+    if request.method == 'POST':
+        data={
+            'sex' :request.form.getlist('sex', None),
+            'age' : request.form.getlist('age[]', None),
+            'month' : request.form.getlist('month', None),
+            'time' : request.form.getlist('time', None),
+            'addr' : request.form['addr']
+        }
+
+        # data 를 이용하여 bookmark table에 저장하고, 사용자의 전체 북마크 리스트를 entries에 반환
+
+    return render_template('bookmark.html', entries=entries)
+
+
+
+@app.route('/map/', methods=['POST'])
+def clickBookmark(bnum):
+    # bnum 을 이용한 검색 결과를 entries에 저장 
+  
+    return render_template('map.html', data=data, entries=entries, point= point)
+
+#######end bookmark part #######
+
+
 
 
 if __name__ == '__main__':
