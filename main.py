@@ -357,12 +357,12 @@ def insert_query(data):
 
     #and 제거
     where_query = where_query[:len(where_query)-5]
-    where_query+= " order by maxpop desc;"
     return where_query, ageflag
 
 def insert_query2(ageflag) :
-    where_query2 = "(select Max("
+    where_query2 = ", (select Max("
     agetemp2=0
+    query_flag = False
     for i in range(10):
         if(ageflag[i]==1):
             if(i>=5):
@@ -371,10 +371,14 @@ def insert_query2(ageflag) :
             where_query2+="man"
             where_query2+=str(50-i*10+agetemp2)
             where_query2+=", "
+            query_flag = True
      #쉼표 제거
     where_query2 = where_query2[:len(where_query2)-2]
     where_query2+=")) as maxpop"
-    return where_query2
+    if query_flag :
+        return where_query2
+    else :
+        return ""
 
 def getSearchMap(data):
 
@@ -383,8 +387,10 @@ def getSearchMap(data):
    
     where_query,ageflag = insert_query(data)
     where_query2 = insert_query2(ageflag)
+    if where_query2 :
+        where_query+= " order by maxpop desc;"
 
-    cur = g.db.execute('select *, '+where_query2+' from population '+where_query)
+    cur = g.db.execute('select *'+where_query2+' from population '+where_query)
     #부속질의문 사용 끝
     #cur = g.db.execute('select * from population where man10>100')
     
@@ -739,7 +745,10 @@ def addBookmark():
     where_qeury2 = ""
     where_query,ageflag = insert_query(data)
     where_query2 = insert_query2(ageflag)
-    cur = g.db.execute('select *, '+where_query2+' from population '+where_query)
+    if where_query2 :
+        where_query+= " order by maxpop desc;"
+
+    cur = g.db.execute('select *'+where_query2+' from population '+where_query)
     m_row = cur.fetchone()
 
     #여기 수정 / 테이블 수정
