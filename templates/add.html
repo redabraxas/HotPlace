@@ -1,5 +1,6 @@
 {% extends "community.html" %}
 {% block board %}
+<div class=showpost style="width:627px;">
 {% if session.logged_in %}
 {% if page=="1" %}
 <form action="{{ url_for('adding',page=1) }}" method=post class=adding> <dl>
@@ -28,7 +29,7 @@
 		{% endif %}
 	</select>
 	{% if page!="2" and page!="4" %}
-	<dt>area
+	&nbsp;&nbsp;&nbsp;&nbsp;area
 		<select name=area>
 		<option value="서울">서울</option>
 		<option value="광주">광주</option>
@@ -48,14 +49,16 @@
 		<option value="충북">충북</option>
 	</select>
 	{% endif %}		
-	<dt>제목 <input type=text size=60 name= title>
+	<dt>제목 <input type=text size=95 name= title>
 	<dt>
 		<dd><textarea name= content rows=70 cols=100></textarea>
-		<dd><input type=submit value=Share>
-
+			<CENTER>
+		<dd style="margin:10px;"><input type=submit value=등록>
+			</CENTER>
 </dl> </form>
 {% else %}
 you should login
 {% endif %}
+</div>
 
 {% endblock %} 

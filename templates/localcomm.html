@@ -1,5 +1,6 @@
 {% extends "community.html" %}
 {% block board %}
+{% if session.logged_in %}
 <div id = "communityboard">
 <CENTER>
 <div class = "boardtitle">
@@ -42,8 +43,7 @@
    			<td style="color:#6F6F6F;font-weight: lighter;">{{ entry.year }}-{{ entry.month }}-{{ entry.day }}</td>
    		</tr>
 
-		{% else %}
-		<li><em>Unbelievable. No entries here so far</em></li>
+
 		{% endfor %}
 	</table>
 	</ul>
@@ -63,5 +63,6 @@
 
 	 
 </div>
+{% endif %}
 
 {% endblock %} 

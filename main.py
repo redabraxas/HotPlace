@@ -629,7 +629,7 @@ def delpost(page,num):
         for row in cur:
             wname=row[0]
         if (session['nick']==wname) or (session['nick']=="admin"):
-            g.db.execute('delete from service where p_num=(?)',(num,))
+            g.db.execute('delete from partner where p_num=(?)',(num,))
             g.db.commit()
             return redirect(url_for('localcomm',page=3))
         else:
