@@ -1,6 +1,6 @@
 {% extends "community.html" %}
 {% block board %}
-{% if session.logged_in %}
+
 <div id = "communityboard">
 <CENTER>
 <div class = "boardtitle">
@@ -47,7 +47,7 @@
 		{% endfor %}
 	</table>
 	</ul>
-	
+	{% if session.logged_in %}
 	<div class=bt>
       {% if page=="1" %}
 		<a href="{{ url_for('add',page=1) }}"><input type=button value=글쓰기></a>
