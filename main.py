@@ -191,7 +191,7 @@ def init_userdb():
 def init_bookmark():
     con=sqlite3.connect("test.db")
     cur=con.cursor()
-    cur.execute('drop table bookmark')
+    #cur.execute('drop table bookmark')
     #즐겨찾기 테이블 추가
     #id 외래키로 가져오는 방법..?
 
@@ -717,9 +717,7 @@ def getBookmarkList():
         p_num20 = row[25], p_num30 = row[26], p_num40 = row[27], p_num50 = row[28], m1= row[29],
         m2 = row[30], m3 = row[31], m4 = row[32], m5 = row[33], m6 = row[34],
         m7 = row[35], m8 = row[36], m9 = row[37], m10 = row[38], m11 = row[39],
-        evening = row[40], afternoon = row[41])for row in cur.fetchall()]
-    
-    return entries;
+        m12 = row[40],evening = row[41], afternoon = row[42])for row in cur.fetchall()]
     return render_template('bookmark.html', entries=entries)
 
 
@@ -860,14 +858,22 @@ def addBookmark():
         p_num20 = row[25], p_num30 = row[26], p_num40 = row[27], p_num50 = row[28], m1= row[29],
         m2 = row[30], m3 = row[31], m4 = row[32], m5 = row[33], m6 = row[34],
         m7 = row[35], m8 = row[36], m9 = row[37], m10 = row[38], m11 = row[39],
-        evening = row[40], afternoon = row[41])for row in cur.fetchall()]
+        m12 = row[40],evening = row[41], afternoon = row[42])for row in cur.fetchall()]
     
     return render_template('bookmark.html', entries=entries)
 
 @app.route('/map/', methods=['POST'])
 def clickBookmark(bnum):
-    # bnum 을 이용한 검색 결과를 entries에 저장 
-  
+    # bnum 을 이용한 map검색 결과를 entries에 저장 
+    
+    #cur = g.db.execute('select * from bookmark where bnum ='+bnum)
+    cur = g.db.execute('select * from bookmark')
+    entries = [dict(year=row[1], month=row[2],  day=row[3],  time=row[5], isholiday=row[4],  
+        location=row[6], mapx=row[7], mapy=row[8], weather=row[9], 
+        man10=row[10], man20=row[11], man30=row[12], man40=row[13], man50=row[14],
+        woman10=row[15], woman20=row[16], woman30=row[17], woman40=row[18], woman50=row[19]
+        )for row in cur.fetchall()]
+    
     return render_template('map.html', data=data, entries=entries, point= point)
 
 #######end bookmark part #######
@@ -878,7 +884,7 @@ def clickBookmark(bnum):
 if __name__ == '__main__':
     #init_db()
     #init_userdb()
-    #init_bookmark()
+    init_bookmark()
     #connect_db()
     init_commdb()
     
