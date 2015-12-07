@@ -715,7 +715,7 @@ def getBookmarkList():
     # session['id'] 를 이용하여  북마크 전체 결과를 entries 에 저장
     #cur = g.db.execute('select * from bookmark where b_id = "A"')
     cur = g.db.execute('select * from bookmark where b_id = '+session['nick'])
-    entries = [dict(year=row[1], month=row[2],  day=row[3],  time=row[5], isholiday=row[4],  
+    entries = [dict(b_num = row[0], year=row[1], month=row[2],  day=row[3],  time=row[5], isholiday=row[4],  
         location=row[6], mapx=row[7], mapy=row[8], weather=row[9], 
         man10=row[10], man20=row[11], man30=row[12], man40=row[13], man50=row[14],
         woman10=row[15], woman20=row[16], woman30=row[17], woman40=row[18], woman50=row[19],
@@ -859,7 +859,7 @@ def addBookmark():
     #entry 
     #id라고 써도 되나
     cur = g.db.execute('select * from bookmark')
-    entries = [dict(year=row[1], month=row[2],  day=row[3],  time=row[5], isholiday=row[4],  
+    entries = [dict(b_num = row[0], year=row[1], month=row[2],  day=row[3],  time=row[5], isholiday=row[4],  
         location=row[6], mapx=row[7], mapy=row[8], weather=row[9], 
         man10=row[10], man20=row[11], man30=row[12], man40=row[13], man50=row[14],
         woman10=row[15], woman20=row[16], woman30=row[17], woman40=row[18], woman50=row[19],
@@ -871,13 +871,13 @@ def addBookmark():
     
     return render_template('bookmark.html', entries=entries)
 
-@app.route('/map/', methods=['POST'])
+@app.route('/map/', methods=['GET','POST'])
 def clickBookmark(bnum):
     # bnum 을 이용한 map검색 결과를 entries에 저장 
     
-    #cur = g.db.execute('select * from bookmark where bnum ='+bnum)
-    cur = g.db.execute('select * from bookmark')
-    entries = [dict(year=row[1], month=row[2],  day=row[3],  time=row[5], isholiday=row[4],  
+    cur = g.db.execute('select * from bookmark where b_num ='+bnum)
+    #cur = g.db.execute('select * from bookmark')
+    entries = [dict(b_num = row[0], year=row[1], month=row[2],  day=row[3],  time=row[5], isholiday=row[4],  
         location=row[6], mapx=row[7], mapy=row[8], weather=row[9], 
         man10=row[10], man20=row[11], man30=row[12], man40=row[13], man50=row[14],
         woman10=row[15], woman20=row[16], woman30=row[17], woman40=row[18], woman50=row[19]
