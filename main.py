@@ -360,9 +360,9 @@ def insert_query(data):
     return where_query, ageflag
 
 def insert_query2(ageflag) :
-    where_query2 = ", (select Max("
+    where_query2 = ",(select Max("
     agetemp2=0
-    query_flag = False
+    query_flag=False
     for i in range(10):
         if(ageflag[i]==1):
             if(i>=5):
@@ -371,13 +371,13 @@ def insert_query2(ageflag) :
             where_query2+="man"
             where_query2+=str(50-i*10+agetemp2)
             where_query2+=", "
-            query_flag = True
+            query_flag=True
      #쉼표 제거
     where_query2 = where_query2[:len(where_query2)-2]
     where_query2+=")) as maxpop"
-    if query_flag :
+    if query_flag:
         return where_query2
-    else :
+    else:
         return ""
 
 def getSearchMap(data):
@@ -387,8 +387,8 @@ def getSearchMap(data):
    
     where_query,ageflag = insert_query(data)
     where_query2 = insert_query2(ageflag)
-    if where_query2 :
-        where_query+= " order by maxpop desc;"
+    if where_query2:
+        where_query+=" order by maxpop desc;"
 
     cur = g.db.execute('select *'+where_query2+' from population '+where_query)
     #부속질의문 사용 끝
@@ -464,6 +464,7 @@ def map():
 
 
 
+
 # 로그인
 @app.route('/login',methods=['GET','POST'])
 def login():
@@ -532,6 +533,7 @@ def logout():
     session.pop('logged_in',None)
     #flash('You were logged out')
     return redirect(url_for('index'))
+
 #######start local community part #######
 @app.route('/localcomm/<page>')
 def localcomm(page):
@@ -890,7 +892,7 @@ def clickBookmark(bnum):
 
 if __name__ == '__main__':
     #init_db()
-    #init_userdb()
+    init_userdb()
     init_bookmark()
     #connect_db()
     init_commdb()
