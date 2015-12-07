@@ -1,26 +1,25 @@
 {% extends "index.html" %}
 {% block body %}
+{% for message in get_flashed_messages() %}
+<script language='javascript'>
+    alert("{{ message }}");
+</script>
+{% endfor %}
 
-<form action="{{ url_for('join') }}" method=post>
-    <table style='margin:0 auto; margin-top:5%;'>
-        <tr>
-            <th colspan='2'>회원가입</th>
-        </tr>
-        <tr>
-            <td>아이디</td>
-            <td><input type='text' size='17' name='id' placeholder='아이디' /></td>
-        </tr>
-        <tr>
-            <td>비밀번호</td>
-            <td><input type='password' size='17' name='passwd' placeholder='비밀번호' /></td>
-        </tr>
-        <tr>
-            <td>닉네임</td>
-            <td><input type='text' size='17' name='nick' placeholder='닉네임' /></td>
-        </tr>
-        <tr>
-            <td colspan='2' style='text-align:center;'><input type='submit' value='등록' /></td>
-        </tr>
-    </table>
+
+<form class="form-4" action="{{ url_for('join') }}" method=post>
+    <h1>Sign up</h1>
+    <p>
+        <input type="text" name="id" placeholder="ID" required>
+    </p>
+    <p>
+        <input type="password" name='passwd' placeholder="Password" required>
+    </p>
+    <p>
+        <input type="text" name='nick' placeholder="Nick name" required>
+    </p>
+    <p>
+        <input type="submit" name="submit" value="Sign up">
+    </p>
 </form>
 {% endblock %}

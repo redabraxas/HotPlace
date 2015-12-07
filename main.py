@@ -458,7 +458,6 @@ def map():
 
 
 
-
 # 로그인
 @app.route('/login',methods=['GET','POST'])
 def login():
@@ -512,7 +511,7 @@ def join():
                          [request.form['id'],request.form['passwd'],request.form['nick']])
             g.db.commit()
             flash('회원가입이 완료되었습니다.')
-            return redirect(url_for('index'))
+            return redirect(url_for('join'))
         
         #return render_template('join.html')
     else:
@@ -527,7 +526,6 @@ def logout():
     session.pop('logged_in',None)
     #flash('You were logged out')
     return redirect(url_for('index'))
-
 #######start local community part #######
 @app.route('/localcomm/<page>')
 def localcomm(page):
