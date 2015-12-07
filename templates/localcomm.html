@@ -3,13 +3,23 @@
 <div id = "communityboard">
 <CENTER>
 <div class = "boardtitle">
+   {% if page == "1" %}
    <span><strong><i>LOCAL COMMUNITY</i></strong></span><span style="font-size:10pt;"><i>지역별게시판</i></span>
+   {% elif page== "2" %}
+   <span><strong><i>INFORMATION</i></strong></span><span style="font-size:10pt;"><i>창업정보공유</i></span>
+   {% elif page== "3" %}
+   <span><strong><i>PARTNER</i></strong></span><span style="font-size:10pt;"><i>동업자찾기</i></span>
+   {% elif page== "4" %}
+   <span><strong><i>CUSTOMER SERVICE</i></strong></span><span style="font-size:10pt;"><i>고객센터</i></span>
+   {% endif %}
 </div>
 <ul class=entries>
 	<table width=900 border=0 cellspacing =0>
    		<tr>
    			<th>category</th>
+            {% if page!="2" and page!="4" %}
    			<th width=80>area</th>
+            {% endif %}
    			<th width=350>title</th>
    			<th width=150>writer</th>
    			<th width=100>date</th>
@@ -17,17 +27,19 @@
    		{% for entry in entries %}
 
    		<tr>
-   			<td style="color:#6B66FF;">{{ entry.w_category }}</td>
-   			<td style="color:#F361A6;">{{ entry.w_area }}</td>
+   			<td style="color:#6B66FF;">{{ entry.category }}</td>
+            {% if page!="2" and page!="4" %}
+   			<td style="color:#F361A6;">{{ entry.area }}</td>
+            {% endif %}
    			<td style="text-align:left;">&nbsp;&nbsp;&nbsp;&nbsp;
                
-               <a href="{{ url_for('showpost',wnum=entry.num) }}">
+               <a href="{{ url_for('showpost',page=page, num=entry.num) }}">
 
                  {# <a href="{{ url_for('showpost') }}/"+entry.num>#}
-               {{ entry.w_title }}
+               {{ entry.title }}
                <a></td>
-   			<td>{{ entry.w_userid }}</th>
-   			<td style="color:#6F6F6F;font-weight: lighter;">{{ entry.w_year }}-{{ entry.w_month }}-{{ entry.w_day }}</td>
+   			<td>{{ entry.userid }}</th>
+   			<td style="color:#6F6F6F;font-weight: lighter;">{{ entry.year }}-{{ entry.month }}-{{ entry.day }}</td>
    		</tr>
 
 		{% else %}
@@ -37,7 +49,15 @@
 	</ul>
 	
 	<div class=bt>
-		<a href="{{ url_for('add') }}"><input type=button value=글쓰기></a>
+      {% if page=="1" %}
+		<a href="{{ url_for('add',page=1) }}"><input type=button value=글쓰기></a>
+      {% elif page=="2" %}
+      <a href="{{ url_for('add',page=2) }}"><input type=button value=글쓰기></a>
+      {% elif page=="3" %}
+      <a href="{{ url_for('add',page=3) }}"><input type=button value=글쓰기></a>
+      {% elif page=="4" %}
+      <a href="{{ url_for('add',page=4) }}"><input type=button value=글쓰기></a>
+      {% endif %}
 	</div>
 </CENTER>
 

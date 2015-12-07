@@ -56,11 +56,82 @@ def init_commdb():
         foreign key(r_userid) references user(id) ON UPDATE CASCADE
         foreign key(r_wnum) references localcomm(w_num) ON UPDATE CASCADE
         );'''
+    infoCommSql='''create table if not exists information(
+        i_category varchar(10),
+        i_year integer,
+        i_month integer,
+        i_day integer,
+        i_title text,
+        i_content integer,
+        i_num integer not null primary key autoincrement,
+        i_userid varchar(20),
+        foreign key (i_userid) references user(id) ON UPDATE CASCADE
+        );'''
+    infoReplySql='''create table if not exists infoReply(
+        ir_year integer,
+        ir_month integer,
+        ir_day integer,
+        ir_content text,
+        ir_num integer not null primary key autoincrement,
+        ir_userid varchar(20),
+        ir_inum integer,
+        foreign key (ir_userid) references user(id) ON UPDATE CASCADE
+        foreign key (ir_inum) references information(i_num) ON UPDATE CASCADE
+        );'''
+    partnerSql='''create table if not exists partner(
+        p_category varchar(10),
+        p_area varchar(10),
+        p_year integer,
+        p_month integer,
+        p_day integer,
+        p_title text,
+        p_content integer,
+        p_num integer not null primary key autoincrement,
+        p_userid varchar(20),
+        foreign key (p_userid) references user(id) ON UPDATE CASCADE
+        );'''
+    partnerReplySql='''create table if not exists partnerReply(
+        pr_year integer,
+        pr_month integer,
+        pr_day integer,
+        pr_content text,
+        pr_num integer not null primary key autoincrement,
+        pr_userid varchar(20),
+        pr_pnum integer,
+        foreign key (pr_userid) references user(id) ON UPDATE CASCADE
+        foreign key (pr_pnum) references partner(p_num) ON UPDATE CASCADE
+        );'''
+    serviceSql='''create table if not exists service(
+        s_category varchar(10),
+        s_year integer,
+        s_month integer,
+        s_day integer,
+        s_title text,
+        s_content integer,
+        s_num integer not null primary key autoincrement,
+        s_userid varchar(20),
+        foreign key (s_userid) references user(id) ON UPDATE CASCADE
+        );'''
+    serviceReplySql='''create table if not exists serviceReply(
+        sr_year integer,
+        sr_month integer,
+        sr_day integer,
+        sr_content text,
+        sr_num integer not null primary key autoincrement,
+        sr_userid varchar(20),
+        sr_snum integer,
+        foreign key (sr_userid) references user(id) ON UPDATE CASCADE
+        foreign key (sr_snum) references information(s_num) ON UPDATE CASCADE
+        );'''
     cur.execute(localCommSql)
-
     cur.execute(localReplySql)
+    cur.execute(infoCommSql)
+    cur.execute(infoReplySql)
+    cur.execute(partnerSql)
+    cur.execute(partnerReplySql)
+    cur.execute(serviceSql)
+    cur.execute(serviceReplySql)
     con.commit()
-
 
 def init_db():
 
@@ -432,26 +503,45 @@ def logout():
     return redirect(url_for('index'))
 
 #######start local community part #######
-@app.route('/localcomm/')
-def localcomm():
+@app.route('/localcomm/<page>')
+def localcomm(page):
+    if page=="1":
+        cur = g.db.execute('select w_category,w_area,w_title,w_content,w_year,w_month,w_day,w_userid, w_num from localcomm order by w_num desc')
+        entries = [dict(category=row[0], area=row[1],title=row[2],content=row[3],year=row[4],month=row[5],day=row[6],userid=row[7],num=row[8]) for row in cur.fetchall()]
+        print(entries)
+        return render_template('localcomm.html', entries = entries, page=page)
+    elif page=="2":
+        cur = g.db.execute('select i_category,i_title,i_content,i_year,i_month,i_day,i_userid, i_num from information order by i_num desc')
+        entries = [dict(category=row[0], title=row[1],content=row[2],year=row[3],month=row[4],day=row[5],userid=row[6],num=row[7]) for row in cur.fetchall()]
+        print(entries)
+        return render_template('localcomm.html', entries = entries, page=page)
+    elif page=="3":
+        cur = g.db.execute('select p_category,p_area,p_title,p_content,p_year,p_month,p_day,p_userid, p_num from partner order by p_num desc')
+        entries = [dict(category=row[0], area=row[1],title=row[2],content=row[3],year=row[4],month=row[5],day=row[6],userid=row[7],num=row[8]) for row in cur.fetchall()]
+        print(entries)
+        return render_template('localcomm.html', entries = entries, page=page)
+    elif page=="4":
+        cur = g.db.execute('select p_category,p_area,p_title,p_content,p_year,p_month,p_day,p_userid, p_num from partner order by p_num desc')
+        entries = [dict(category=row[0], area=row[1],title=row[2],content=row[3],year=row[4],month=row[5],day=row[6],userid=row[7],num=row[8]) for row in cur.fetchall()]
+        print(entries)
+        return render_template('localcomm.html', entries = entries, page=page)
+@app.route('/community/')
+def community():
     cur = g.db.execute('select w_category,w_area,w_title,w_content,w_year,w_month,w_day,w_userid, w_num from localcomm order by w_num desc')
-    entries = [dict(w_category=row[0], w_area=row[1],w_title=row[2],w_content=row[3],w_year=row[4],w_month=row[5],w_day=row[6],w_userid=row[7],num=row[8]) for row in cur.fetchall()]
+    entries = [dict(category=row[0], area=row[1],title=row[2],content=row[3],year=row[4],month=row[5],day=row[6],userid=row[7],num=row[8]) for row in cur.fetchall()]
     print(entries)
     return render_template('localcomm.html', entries = entries)
     
-@app.route('/community/')
-def community():
-    return render_template('community.html')
+@app.route('/add/<page>')
+def add(page):
+    return render_template('add.html',page=page)
 
-@app.route('/add')
-def add():
-    return render_template('add.html')
-
-@app.route('/adding', methods=['POST'])
-def adding():
+@app.route('/adding/<page>', methods=['POST'])
+def adding(page):
     now = time.localtime()
     Category = request.form['category']
-    Area = request.form['area']
+    if page!="2" and page!="4":
+        Area = request.form['area']
     Title = request.form['title']
     Content = request.form['content']
     Year = now.tm_year
@@ -459,9 +549,23 @@ def adding():
     Day = now.tm_mday
     Writer = session['nick']
     #Id = request.form['category']
-    g.db.execute('insert into localcomm (w_category,w_area,w_title,w_content,w_year,w_month,w_day,w_userid) values (?,?,?,?,?,?,?,?);',(Category,Area,Title,Content,Year,Month,Day,Writer,));
-    g.db.commit()
-    return redirect(url_for('localcomm'))
+    if page=="1":
+        g.db.execute('insert into localcomm (w_category,w_area,w_title,w_content,w_year,w_month,w_day,w_userid) values (?,?,?,?,?,?,?,?);',(Category,Area,Title,Content,Year,Month,Day,Writer,));
+        g.db.commit()
+        return redirect(url_for('localcomm',page=1))
+    elif page=="2":
+        g.db.execute('insert into information (i_category,i_title,i_content,i_year,i_month,i_day,i_userid) values (?,?,?,?,?,?,?);',(Category,Title,Content,Year,Month,Day,Writer,));
+        g.db.commit()
+        return redirect(url_for('localcomm',page=2))
+    elif page=="3":
+        g.db.execute('insert into partner (p_category,p_area,p_title,p_content,p_year,p_month,p_day,p_userid) values (?,?,?,?,?,?,?,?);',(Category,Area,Title,Content,Year,Month,Day,Writer,));
+        g.db.commit()
+        return redirect(url_for('localcomm',page=3))
+    elif page=="4":
+        g.db.execute('insert into service (s_category,s_title,s_content,s_year,s_month,s_day,s_userid) values (?,?,?,?,?,?,?);',(Category,Title,Content,Year,Month,Day,Writer,));
+        g.db.commit()
+        return redirect(url_for('localcomm',page=4))
+
 
 #@app.route('/showpost/<wnum>', methods=['POST'])
 #def showpost(wnum):
@@ -469,42 +573,105 @@ def adding():
 #    cur = g.db.execute('select w_category,w_area,w_title,w_content,w_year,w_month,w_day,w_num from localcomm where w_num=num;')
 #    entries2 = [dict(w_category=row[0], w_area=row[1],w_title=row[2],w_content=row[3],w_year=row[4],w_month=row[5],w_day=row[6],w_num=row[7]) for row in cur.fetchall()]
 #    return render_template('showpost.html', entries2 = entries2)
-@app.route('/showpost/<wnum>')
-def showpost(wnum):
-    num=int(wnum);
-    cur = g.db.execute('select w_category,w_area,w_title,w_content,w_year,w_month,w_day,w_userid,w_num from localcomm where w_num=(?);',(num,))
-    entries2 = [dict(w_category=row[0], w_area=row[1],w_title=row[2],w_content=row[3],w_year=row[4],w_month=row[5],w_day=row[6],userid=row[7],num=row[8]) for row in cur.fetchall()]
-    cur2 = g.db.execute('select r_userid,r_content,r_year,r_month,r_day from localReply where r_wnum=(?) order by r_num desc;',(num,))
-    entries3 = [dict(r_userid=row[0], r_content=row[1],r_year=row[2],r_month=row[3],r_day=row[4]) for row in cur2.fetchall()]
-    
-    return render_template('showpost.html', entries2 = entries2, entries3=entries3, num=num)
+@app.route('/showpost/<page>/<num>')
+def showpost(page,num):
+    num=int(num);
+    if page=="1":
+        cur = g.db.execute('select w_category,w_area,w_title,w_content,w_year,w_month,w_day,w_userid,w_num from localcomm where w_num=(?);',(num,))
+        entries2 = [dict(category=row[0], area=row[1],title=row[2],content=row[3],year=row[4],month=row[5],day=row[6],userid=row[7],num=row[8]) for row in cur.fetchall()]
+        cur2 = g.db.execute('select r_userid,r_content,r_year,r_month,r_day from localReply where r_wnum=(?) order by r_num desc;',(num,))
+        entries3 = [dict(userid=row[0], content=row[1],year=row[2],month=row[3],day=row[4]) for row in cur2.fetchall()]
+        return render_template('showpost.html', entries2 = entries2, entries3=entries3, num=num, page=page)
+    elif page=="2":
+        cur = g.db.execute('select i_category,i_title,i_content,i_year,i_month,i_day,i_userid,i_num from information where i_num=(?);',(num,))
+        entries2 = [dict(category=row[0], title=row[1],content=row[2],year=row[3],month=row[4],day=row[5],userid=row[6],num=row[7]) for row in cur.fetchall()]
+        cur2 = g.db.execute('select ir_userid,ir_content,ir_year,ir_month,ir_day from infoReply where ir_inum=(?) order by ir_num desc;',(num,))
+        entries3 = [dict(userid=row[0], content=row[1],year=row[2],month=row[3],day=row[4]) for row in cur2.fetchall()]
+        return render_template('showpost.html', entries2 = entries2, entries3=entries3, num=num, page=page)
+    elif page=="3":
+        cur = g.db.execute('select p_category,p_area,p_title,p_content,p_year,p_month,p_day,p_userid,p_num from partner where p_num=(?);',(num,))
+        entries2 = [dict(category=row[0], area=row[1],title=row[2],content=row[3],year=row[4],month=row[5],day=row[6],userid=row[7],num=row[8]) for row in cur.fetchall()]
+        cur2 = g.db.execute('select pr_userid,pr_content,pr_year,pr_month,pr_day from partnerReply where pr_pnum=(?) order by pr_num desc;',(num,))
+        entries3 = [dict(userid=row[0], content=row[1],year=row[2],month=row[3],day=row[4]) for row in cur2.fetchall()]
+        return render_template('showpost.html', entries2 = entries2, entries3=entries3, num=num, page=page)
+    elif page=="4":
+        cur = g.db.execute('select s_category,s_title,s_content,s_year,s_month,s_day,s_userid,s_num from service where s_num=(?);',(num,))
+        entries2 = [dict(category=row[0], title=row[1],content=row[2],year=row[3],month=row[4],day=row[5],userid=row[6],num=row[7]) for row in cur.fetchall()]
+        cur2 = g.db.execute('select sr_userid,sr_content,sr_year,sr_month,sr_day from serviceReply where sr_snum=(?) order by sr_num desc;',(num,))
+        entries3 = [dict(userid=row[0], content=row[1],year=row[2],month=row[3],day=row[4]) for row in cur2.fetchall()]
+        return render_template('showpost.html', entries2 = entries2, entries3=entries3, num=num, page=page)    
 
-@app.route('/delpost/<wnum>')
-def delpost(wnum):
+@app.route('/delpost/<page>/<num>')
+def delpost(page,num):
+    num=int(num)
+    if page=="1":
+        cur=g.db.execute('select w_userid from localcomm where w_num=(?);',(num,))
+        for row in cur:
+            wname=row[0]
+        if (session['nick']==wname) or (session['nick']=="admin"):
+            g.db.execute('delete from localcomm where w_num=(?)',(num,))
+            g.db.commit()
+            return redirect(url_for('localcomm',page=1))
+        else:
+            return "권한이 없습니다"
+    elif page=="2":
+        cur=g.db.execute('select i_userid from information where i_num=(?);',(num,))
+        for row in cur:
+            wname=row[0]
+        if (session['nick']==wname) or (session['nick']=="admin"):
+            g.db.execute('delete from information where i_num=(?)',(num,))
+            g.db.commit()
+            return redirect(url_for('localcomm',page=2))
+        else:
+            return "권한이 없습니다"
+    elif page=="3":
+        cur=g.db.execute('select p_userid from partner where p_num=(?);',(num,))
+        for row in cur:
+            wname=row[0]
+        if (session['nick']==wname) or (session['nick']=="admin"):
+            g.db.execute('delete from service where p_num=(?)',(num,))
+            g.db.commit()
+            return redirect(url_for('localcomm',page=3))
+        else:
+            return "권한이 없습니다"
+    elif page=="4":
+        cur=g.db.execute('select s_userid from service where s_num=(?);',(num,))
+        for row in cur:
+            wname=row[0]
+        if (session['nick']==wname) or (session['nick']=="admin"):
+            g.db.execute('delete from service where s_num=(?)',(num,))
+            g.db.commit()
+            return redirect(url_for('localcomm',page=4))
+        else:
+            return "권한이 없습니다"
+
+@app.route('/addreply/<page>/<wnum>', methods=['POST'])
+def addreply(page,wnum):
     num=int(wnum)
-    cur=g.db.execute('select w_userid from localcomm where w_num=(?);',(num,))
-    for row in cur:
-        wname=row[0]
-    if (session['nick']==wname) or (session['nick']=="admin"):
-        g.db.execute('delete from localcomm where w_num=(?)',(wnum,))
-        g.db.commit()
-        return redirect(url_for('localcomm'))
-    else:
-        return session['nick']
-
-@app.route('/addreply/<wnum>', methods=['POST'])
-def addreply(wnum):
-    wnum=int(wnum)
     now = time.localtime()
     Writer = session['nick']
     Year = now.tm_year
     Month = now.tm_mon
     Day = now.tm_mday
     Content = request.form['content']
-    g.db.execute('insert into localReply (r_userid,r_content,r_year,r_month,r_day,r_wnum) values (?,?,?,?,?,?);',(Writer,Content,Year,Month,Day,wnum,));
-    g.db.commit()
-    return redirect(url_for('localcomm'))
+    if page=="1":
+        g.db.execute('insert into localReply (r_userid,r_content,r_year,r_month,r_day,r_wnum) values (?,?,?,?,?,?);',(Writer,Content,Year,Month,Day,num,));
+        g.db.commit()
+        return redirect(url_for('showpost',page=1,wnum=num))
+    elif page=="2":
+        g.db.execute('insert into infoReply (ir_userid,ir_content,ir_year,ir_month,ir_day,ir_inum) values (?,?,?,?,?,?);',(Writer,Content,Year,Month,Day,num,));
+        g.db.commit()
+        return redirect(url_for('showpost',page=2,num=num))
+    elif page=="3":
+        g.db.execute('insert into partnerReply (pr_userid,pr_content,pr_year,pr_month,pr_day,pr_pnum) values (?,?,?,?,?,?);',(Writer,Content,Year,Month,Day,num,));
+        g.db.commit()
+        return redirect(url_for('showpost',page=3,num=num))
+    elif page=="4":
+        g.db.execute('insert into serviceReply (sr_userid,sr_content,sr_year,sr_month,sr_day,sr_snum) values (?,?,?,?,?,?);',(Writer,Content,Year,Month,Day,num,));
+        g.db.commit()
+        return redirect(url_for('showpost',page=4,num=num))    
 #######end local community part #######
+
 
 
 
@@ -554,7 +721,7 @@ if __name__ == '__main__':
     #init_userdb()
     #init_bookmark()
     #connect_db()
-    #init_commdb()
+    init_commdb()
     
     app.debug=True
     app.run(port=5000)

@@ -1,12 +1,33 @@
 {% extends "community.html" %}
 {% block board %}
 {% if session.logged_in %}
-<form action="{{ url_for('adding') }}" method=post class=adding> <dl>
+{% if page=="1" %}
+<form action="{{ url_for('adding',page=1) }}" method=post class=adding> <dl>
+{% elif page=="2" %}
+<form action="{{ url_for('adding',page=2) }}" method=post class=adding> <dl>
+{% elif page=="3" %}
+<form action="{{ url_for('adding',page=3) }}" method=post class=adding> <dl>
+{% elif page=="4" %}
+<form action="{{ url_for('adding',page=4) }}" method=post class=adding> <dl>
+{% endif %}
 	<dt>CATEGORY
 	<select name=category>
+		{% if page=="1" %}
 		<option value=QNA>QNA</option>
 		<option value=FREETALK>FREETALK</option>
+		{% elif page=="2" %}
+		<option value=기사>기사</option>
+		<option value=창업지원프로그램>창업지원프로그램</option>
+		<option value=홍보>홍보</option>
+		{% elif page=="3" %}
+		<option value=함께해요>함께해요</option>
+		{% elif page=="4" %}
+		<option value=QNA>QNA</option>
+		<option value=불편사항>불편사항</option>
+		<option value=신고>신고</option>
+		{% endif %}
 	</select>
+	{% if page!="2" and page!="4" %}
 	<dt>area
 		<select name=area>
 		<option value="서울">서울</option>
@@ -25,11 +46,11 @@
 		<option value="제주">제주</option>
 		<option value="충남">충남</option>
 		<option value="충북">충북</option>
-	</select>		
-	<dt>제목:
-		<dd><input type=text size=30 name= title>
-	<dt>Text:
-		<dd><textarea name= content rows=40 cols=40></textarea>
+	</select>
+	{% endif %}		
+	<dt>제목 <input type=text size=60 name= title>
+	<dt>
+		<dd><textarea name= content rows=70 cols=100></textarea>
 		<dd><input type=submit value=Share>
 
 </dl> </form>
