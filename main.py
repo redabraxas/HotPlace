@@ -521,16 +521,16 @@ def localcomm(page):
         print(entries)
         return render_template('localcomm.html', entries = entries, page=page)
     elif page=="4":
-        cur = g.db.execute('select p_category,p_area,p_title,p_content,p_year,p_month,p_day,p_userid, p_num from partner order by p_num desc')
-        entries = [dict(category=row[0], area=row[1],title=row[2],content=row[3],year=row[4],month=row[5],day=row[6],userid=row[7],num=row[8]) for row in cur.fetchall()]
+        cur = g.db.execute('select s_category,s_title,s_content,s_year,s_month,s_day,s_userid, s_num from service order by s_num desc')
+        entries = [dict(category=row[0],title=row[1],content=row[2],year=row[3],month=row[4],day=row[5],userid=row[6],num=row[7]) for row in cur.fetchall()]
         print(entries)
         return render_template('localcomm.html', entries = entries, page=page)
 @app.route('/community/')
 def community():
-    cur = g.db.execute('select w_category,w_area,w_title,w_content,w_year,w_month,w_day,w_userid, w_num from localcomm order by w_num desc')
-    entries = [dict(category=row[0], area=row[1],title=row[2],content=row[3],year=row[4],month=row[5],day=row[6],userid=row[7],num=row[8]) for row in cur.fetchall()]
-    print(entries)
-    return render_template('localcomm.html', entries = entries)
+    #cur = g.db.execute('select w_category,w_area,w_title,w_content,w_year,w_month,w_day,w_userid, w_num from localcomm order by w_num desc')
+    #entries = [dict(category=row[0], area=row[1],title=row[2],content=row[3],year=row[4],month=row[5],day=row[6],userid=row[7],num=row[8]) for row in cur.fetchall()]
+    #print(entries)
+    return redirect(url_for('localcomm',page=1))
     
 @app.route('/add/<page>')
 def add(page):
@@ -657,10 +657,10 @@ def addreply(page,wnum):
     if page=="1":
         g.db.execute('insert into localReply (r_userid,r_content,r_year,r_month,r_day,r_wnum) values (?,?,?,?,?,?);',(Writer,Content,Year,Month,Day,num,));
         g.db.commit()
-        return redirect(url_for('showpost',page=1,wnum=num))
+        return redirect(url_for('showpost',page=1,num=num))
     elif page=="2":
         g.db.execute('insert into infoReply (ir_userid,ir_content,ir_year,ir_month,ir_day,ir_inum) values (?,?,?,?,?,?);',(Writer,Content,Year,Month,Day,num,));
-        g.db.commit()
+        g.db.commit() 
         return redirect(url_for('showpost',page=2,num=num))
     elif page=="3":
         g.db.execute('insert into partnerReply (pr_userid,pr_content,pr_year,pr_month,pr_day,pr_pnum) values (?,?,?,?,?,?);',(Writer,Content,Year,Month,Day,num,));
