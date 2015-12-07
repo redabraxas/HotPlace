@@ -23,19 +23,32 @@
 				<a href="{{ url_for('index') }}">  <h1>Hot Place </h1> <a> 
 			</div>
 
+
+			<div id="nav2">
+				
+
+
 			<div id="nav">
-				<ul class="menu">
+
+				<ul class = "menu1">
+				 {% if not session.logged_in %}
+				    <a href="{{ url_for('login') }}"> <li class="menu-item">  Login </li>  </a>
+				    <a href="{{ url_for('join') }}"> <li class="menu-item">  Register </li>  <a>
+
+			    {% else %}
+			   		<a href="{{ url_for('logout') }}"> <li class="menu-item">  Logout </li>  </a>
+			   		  <a href="{{ url_for('getBookmarkList') }}"> <li class="menu-item">  Bookmark  </li>  <a>
+			    {% endif %}
+
+			</ul>
+
+
+
+				<ul class="menu2">
 					 <a href="{{ url_for('index') }}"> <li class="menu-item">  Map  </li> <a>
 					 <a href="{{ url_for('community') }}"> <li class="menu-item">  Community </li>  <a>
-    {% if not session.logged_in %}
-    <a href="{{ url_for('login') }}"> <li class="menu-item">  Login </li>  </a>
-    {% else %}
-    <a href="{{ url_for('logout') }}"> <li class="menu-item">  Logout </li>  </a>
-    {% endif %}
-    <a href="{{ url_for('join') }}"> <li class="menu-item">  Register </li>  <a>
-
-    <a href="{{ url_for('getBookmarkList') }}"> <li class="menu-item">  Bookmark </li>  <a>
-</ul>
+ 
+				</ul>
 			</div>
 
 		</div>

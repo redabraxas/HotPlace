@@ -80,13 +80,7 @@
 
         }
 
-        #select_box{
-          
-            height: 700px;
-            width: 20%;
-            float: right;
-        }
-		
+
 
 
 		#community{
@@ -275,3 +269,55 @@ td {
     font-size: 40pt;
 
 }
+
+#select_box{
+    background-color: #F2E8DC;
+    width: 20%;
+    float: right;
+}
+        
+
+#map_loc,#map_sex, #map_age, #map_month, #map_time {
+   background-color:#F2E8DC;
+   margin: 5px;
+   padding:10px;
+}
+
+
+#select_box > input {
+    width:150; height:21; 
+    background-color:#F5EED2 ;
+    border:1 solid red; font-family:굴림; 
+    font-size:10pt; 
+    color:green;
+}
+
+
+#search, #addBookmark{
+   font-family: 굴림;
+   border: 3px solid #0a3c59;
+   background: #091928;
+   padding: 10px 20px;
+   
+   color: white;
+   font-size: 16px;
+   text-decoration: none;
+   vertical-align: middle;
+
+   margin-left: 30px;
+
+   }
+#search:hover, #serach:active, #addBookmark:hover, #addBookmark:active {
+   font-family: 굴림;
+   border: 3px solid #0a3c59;
+   background: #CCDACD;
+   padding: 10px 20px;
+   
+   color: black;
+   font-size: 16px;
+   text-decoration: none;
+   vertical-align: middle;
+
+    margin-left: 30px;
+   }
+

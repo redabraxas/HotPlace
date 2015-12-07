@@ -16,6 +16,8 @@
     document.myForm.submit();
 
   }
+
+  window['hidden'].location.reload(true);
 </script>
 
 
@@ -278,20 +280,23 @@
                 
                 <input type='hidden' name='clinic_id' value="<?=$clinic_id?>"  > <br>
 
-                {% if data %}
-                    검색할위치: <input type="text" name="addr" value={{ data.addr }}> 
-                {% else %}
-                    검색할위치: <input type="text" name="addr" > 
-                {% endif %}
-               
+                <div id='map_loc'>
+                    {% if data %}
+                        검색할위치: <input id='loc' type="text" name="addr" value={{ data.addr }}> 
+                    {% else %}
+                        검색할위치: <input id='loc' type="text" name="addr" > 
+                    {% endif %}
+               </div>
 
-                <div>
+                <div id='map_sex'>
                     남/녀 선택 :
-                    <input type="checkbox" name="sex" value="man" >남자
+                    <input type="checkbox" name="sex" value="man">남자
                     <input type="checkbox" name="sex" value="woman">여자
                 </div>
 
-                <div>
+            
+
+                <div id='map_age'>
                     연령대 선택 : <br>
 
 
@@ -309,14 +314,14 @@
 
                 </div>
 
-                <div>
+                <div id='map_month'>
                     월 선택 : <br>
                     <input type="checkbox" name="month" value="1">1월
                     <input type="checkbox" name="month" value="2">2월
                     <input type="checkbox" name="month" value="3">3월
                     <input type="checkbox" name="month" value="4">4월
                     <input type="checkbox" name="month" value="5">5월
-                    <input type="checkbox" name="month" value="6">6월
+                    <input type="checkbox" name="month" value="6">6월<br>
                     <input type="checkbox" name="month" value="7">7월
                     <input type="checkbox" name="month" value="8">8월
                     <input type="checkbox" name="month" value="9">9월
@@ -329,7 +334,7 @@
 
               
 
-                <div>
+                <div id='map_time'>
 
                 시간 선택 : <br>
                     <input type="checkbox" name="time" value="afternoon">점심: 12시~1시
@@ -337,9 +342,10 @@
                 </div>
             
 
-          
-            <input type="button" value="검색" onclick='mySubmit(1)' />
-            <input type="button" value="북마크 추가" onclick='mySubmit(2)' />
+        <div style="margin: 0 auto; witdh: 100%; ">          
+            <input id="search" type="button" value="검색" onclick='mySubmit(1)' />
+            <input id="addBookmark" type="button" value="북마크 추가" onclick='mySubmit(2)' />
+        </div>
 
         <!--     <input type='submit' value="검색"> 
             <input type='submit' value="검색"> --><br>
