@@ -189,24 +189,23 @@ def init_userdb():
     db.commit()
 
 def init_bookmark():
-    #con=sqlite3.connect("test.db")
-    #cur=con.cursor()
+    con=sqlite3.connect("test.db")
+    cur=con.cursor()
+    cur.execute('drop table bookmark')
     #즐겨찾기 테이블 추가
     #id 외래키로 가져오는 방법..?
 
     bookmarksql='''create table if not exists bookmark(
         b_num integer not null,
-        b_id varchar(20) not null,
-        mapx double,
-        mapy double,
-        zoom integer,
         p_year integer,
         p_month integer,
         p_day integer,
-        isholiday varchar(10),
-        p_time varchar(10),
-        location varchar(30),
-        weather varchar(10),
+        isholiday text,
+        p_time text,
+        location text,
+        mapx real,
+        mapy real,
+        weather text,
         man10 integer,
         man20 integer,
         man30 integer,
@@ -217,12 +216,35 @@ def init_bookmark():
         woman30 integer,
         woman40 integer,
         woman50 integer,
-        tag varchar(30),
+        b_id varchar(20) not null,
+        tag text,
+        man integer,
+        woman integer,
+        p_num10 integer,
+        p_num20 integer,
+        p_num30 integer,
+        p_num40 integer,
+        p_num50 integer,
+        m1 integer,
+        m2 integer,
+        m3 integer,
+        m4 integer,
+        m5 integer,
+        m6 integer,
+        m7 integer,
+        m8 integer,
+        m9 integer,
+        m10 integer,
+        m11 integer,
+        m12 integer,
+        evening integer,
+        afternoon integer,
         primary key(b_num)
+        foreign key(b_id) references user(id) ON UPDATE CASCADE
     );'''
 
     cur.execute(bookmarksql)
-    #con.commit()    
+    con.commit()    
    
 def read_db():
     con=sqlite3.connect("test.db")
@@ -231,11 +253,7 @@ def read_db():
     print(cur.fetchall())
 
 
-def getSearchMap(data):
-
-    # data.sex, data.age, data.month, data.time -> 전부 리스트 타입으로 사용자가 택한 값만 들어있습니다.
-    # ex) data['sex'] = [man, woman]  data.age=[0,0,0,10,40] data.month =[1,5,6]  data.time=[afternoon, evening]
-   
+def insert_query(data):
     ageflag = [0]*10
     where_query = "where "
     for i in range(len(data['sex'])):
@@ -340,9 +358,9 @@ def getSearchMap(data):
     #and 제거
     where_query = where_query[:len(where_query)-5]
     where_query+= " order by maxpop desc;"
+    return where_query, ageflag
 
-    #부속질의문 사용
-    #man10 - woman50
+def insert_query2(ageflag) :
     where_query2 = "(select Max("
     agetemp2=0
     for i in range(10):
@@ -356,8 +374,16 @@ def getSearchMap(data):
      #쉼표 제거
     where_query2 = where_query2[:len(where_query2)-2]
     where_query2+=")) as maxpop"
+    return where_query2
 
-    
+def getSearchMap(data):
+
+    # data.sex, data.age, data.month, data.time -> 전부 리스트 타입으로 사용자가 택한 값만 들어있습니다.
+    # ex) data['sex'] = [man, woman]  data.age=[0,0,0,10,40] data.month =[1,5,6]  data.time=[afternoon, evening]
+   
+    where_query,ageflag = insert_query(data)
+    where_query2 = insert_query2(ageflag)
+
     cur = g.db.execute('select *, '+where_query2+' from population '+where_query)
     #부속질의문 사용 끝
     #cur = g.db.execute('select * from population where man10>100')
@@ -680,9 +706,20 @@ def addreply(page,wnum):
 
 @app.route('/bookmark')
 def getBookmarkList():
-    # session['id'] 를 이용하여  북마크 전체 결과를 entries 에 저장 
+    # session['id'] 를 이용하여  북마크 전체 결과를 entries 에 저장
+    #cur = g.db.execute('select * from bookmark where b_id = "A"')
+    cur = g.db.execute('select * from bookmark where b_id = '+session['nick'])
+    entries = [dict(year=row[1], month=row[2],  day=row[3],  time=row[5], isholiday=row[4],  
+        location=row[6], mapx=row[7], mapy=row[8], weather=row[9], 
+        man10=row[10], man20=row[11], man30=row[12], man40=row[13], man50=row[14],
+        woman10=row[15], woman20=row[16], woman30=row[17], woman40=row[18], woman50=row[19],
+        id=row[20], tag=row[21], man =row[22], woman = row[23], p_num10 = row[24],
+        p_num20 = row[25], p_num30 = row[26], p_num40 = row[27], p_num50 = row[28], m1= row[29],
+        m2 = row[30], m3 = row[31], m4 = row[32], m5 = row[33], m6 = row[34],
+        m7 = row[35], m8 = row[36], m9 = row[37], m10 = row[38], m11 = row[39],
+        evening = row[40], afternoon = row[41])for row in cur.fetchall()]
     
-
+    return entries;
     return render_template('bookmark.html', entries=entries)
 
 
@@ -700,10 +737,132 @@ def addBookmark():
         }
 
         # data 를 이용하여 bookmark table에 저장하고, 사용자의 전체 북마크 리스트를 entries에 반환
+    #입력할 최고의 수치
+    user = "A"
+    where_query = ""
+    where_qeury2 = ""
+    where_query,ageflag = insert_query(data)
+    where_query2 = insert_query2(ageflag)
+    cur = g.db.execute('select *, '+where_query2+' from population '+where_query)
+    m_row = cur.fetchone()
 
+    #여기 수정 / 테이블 수정
+    addbookmark_sql = '''insert into bookmark(
+    p_year,p_month,p_day,isholiday,p_time,
+    location,mapx,mapy,weather,man10,
+    man20,man30,man40,man50,woman10,
+    woman20,woman30,woman40,woman50,b_id,
+    tag,man,woman,p_num10,p_num20,
+    p_num30,p_num40,p_num50,m1,m2,
+    m3,m4,m5,m6,m7,
+    m8,m9,m10,m11,m12,
+    evening,afternoon) values(
+    ?,?,?,?,?,
+    ?,?,?,?,?,
+    ?,?,?,?,?,
+    ?,?,?,?,?,
+    ?,?,?,?,?,
+    ?,?,?,?,?,
+    ?,?,?,?,?,
+    ?,?,?,?,?,
+    ?,?)'''
+    #
+    
+    #bool입력할 것들
+    #성별
+    #user = session['id']
+    s1 = False
+    s2 = False
+    while data['sex']:
+        s_temp = data['sex'].pop()
+
+        if(s_temp=='man'):
+            s1 = True
+        elif(s_temp=='woman'):
+            s2 = True
+    p_count=0 
+    while data['age']:
+        p_temp = data['age'].pop()
+        if(p_count==0):
+            p_num5 = p_temp
+        elif(p_count==1):
+            p_num4 = p_temp
+        elif(p_count==2):
+            p_num3 = p_temp
+        elif(p_count==3):
+            p_num2 = p_temp
+        elif(p_count==4):
+            p_num1 = p_temp
+        p_count= p_count+1
+    
+    m1 = False
+    m2 = False
+    m3 = False
+    m4 = False
+    m5 = False
+    m6 = False
+    m7 = False
+    m8 = False
+    m9 = False
+    m10 = False
+    m11 = False
+    m12 = False
+
+    while data['month']:
+        m_temp = data['month'].pop()
+        if(m_temp == 1):
+            m1 = True
+        elif(m_temp==2):
+            m2 = True
+        elif(m_temp==3):
+            m3 = True
+        elif(m_temp==4):
+            m4 = True
+        elif(m_temp==5):
+            m5 = True
+        elif(m_temp==6):
+            m6 = True
+        elif(m_temp==7):
+            m7 = True
+        elif(m_temp==8):
+            m8 = True
+        elif(m_temp==9):
+            m9 = True
+        elif(m_temp==10):
+            m10 = True
+        elif(m_temp==11):
+            m11 = True
+        elif(m_temp==12):
+            m12 = True
+    
+    d1 = False
+    d2 = False
+    while data['time']:
+        d_temp = data['time'].pop()
+        if(d_temp == 'evening'):
+            d1 = True
+        elif(d_temp == 'afternoon'):
+            d2 = True
+
+    my_tag = data['addr']
+    g.db.execute(addbookmark_sql,(m_row[1],m_row[2],m_row[3],m_row[4],m_row[5],m_row[6],m_row[7],m_row[8],m_row[9],m_row[10],m_row[11],m_row[12],m_row[13],m_row[14],m_row[15],m_row[16],m_row[17],m_row[18],m_row[0],user,my_tag,s1,s2,p_num1,p_num2,p_num3,p_num4,p_num5,m1,m2,m3,m4,m5,m6,m7,m8,m9,m10,m11,m12,d1,d2))
+    g.db.commit()
+    #19개
+    #
+    #entry 
+    #id라고 써도 되나
+    cur = g.db.execute('select * from bookmark')
+    entries = [dict(year=row[1], month=row[2],  day=row[3],  time=row[5], isholiday=row[4],  
+        location=row[6], mapx=row[7], mapy=row[8], weather=row[9], 
+        man10=row[10], man20=row[11], man30=row[12], man40=row[13], man50=row[14],
+        woman10=row[15], woman20=row[16], woman30=row[17], woman40=row[18], woman50=row[19],
+        id=row[20], tag=row[21], man =row[22], woman = row[23], p_num10 = row[24],
+        p_num20 = row[25], p_num30 = row[26], p_num40 = row[27], p_num50 = row[28], m1= row[29],
+        m2 = row[30], m3 = row[31], m4 = row[32], m5 = row[33], m6 = row[34],
+        m7 = row[35], m8 = row[36], m9 = row[37], m10 = row[38], m11 = row[39],
+        evening = row[40], afternoon = row[41])for row in cur.fetchall()]
+    
     return render_template('bookmark.html', entries=entries)
-
-
 
 @app.route('/map/', methods=['POST'])
 def clickBookmark(bnum):
