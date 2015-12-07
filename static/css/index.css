@@ -67,7 +67,7 @@
 
 		#content{
 			position: relative;
-			height: 700px;
+			height: 1000px;
 			width: 100%;
 			float: left;
 		}
@@ -93,6 +93,8 @@
 			background-color: white;
 			height: 500px;
 			width: 100%;
+            position: relative;
+
 		}
 
 
@@ -236,17 +238,16 @@
     text-align: center;
 }
 
+
+table{
+    border-collapse: collapse;
 }
 .entries li{
     margin:5px;
     text-align: center;
 }
 
-table {
-    width: 900px;
-    border-collapse: collapse;
-  }
-th{
+.entries th{
     border-top: 1px solid #bcbcbc;
     border-bottom: 1px solid #bcbcbc;
     padding: 5px 10px;
@@ -256,7 +257,7 @@ th{
     font-weight: lighter;
 
   }
-td {
+.entries td {
     border-top: 1px solid #bcbcbc;
     border-bottom: 1px solid #bcbcbc;
     padding: 5px 10px;
@@ -275,3 +276,54 @@ td {
     font-size: 40pt;
 
 }
+.showpost{
+    width: 900px;
+    vertical-align: middle;
+    margin:0 auto;
+
+}
+.showposttitle{
+    font-weight: lighter;
+    color: #C2C2C2;
+    font-size: 15px;
+}
+.showpostsubtitle{
+    margin-top: 5px;
+    color: black;
+    font-size: 20px;
+}
+.showpostcontent{
+    padding-top :10px;
+    padding-left :10px;
+    padding-bottom: 50px;
+    font-size: 15px;
+    font-weight: lighter;
+}
+
+.entriesreply{
+    padding-top: 50px;
+}
+.entriesreply th{
+    border-top: 1px solid #bcbcbc;
+    border-bottom: 1px solid #bcbcbc;
+    padding: 2px 5px;
+    text-align: center;
+    font-size: 8pt;
+    color:#C2C2C2;
+    font-weight: lighter;
+
+  }
+.entriesreply td {
+    border-top: 1px solid #bcbcbc;
+    border-bottom: 1px solid #bcbcbc;
+    padding: 2px 5px;
+    text-align: center;
+    font-size:10pt;
+    color: #353535;
+    font-weight: lighter;
+}
+
+.showpost dt{
+    margin: 5px;
+}
+
