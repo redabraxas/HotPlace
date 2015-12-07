@@ -2,55 +2,76 @@
 
 {% block board %}
 {% for entry2 in entries2 %}
-<ul class=entries>
-<h1>
-
-{{ entry2.w_category }} 
-{{ entry2.w_area }} 
-{{ entry2.w_year }}-{{ entry2.w_month }}-{{ entry2.w_day }} 
-
-
-{{ entry2.w_title }} 
-{{ entry2.w_content }} 
-{{ entry2.userid }}
-
-</h1>
-</ul>
+<div class=showpost>
+<p class=showposttitle>
+[{{ entry2.category }}] 
+{% if page!="2" and page!="4" %} {{ entry2.area }} {% endif %}
+</p>
+<p class=showpostsubtitle>
+{{ entry2.title }}
+<span class=showposttitle style="float:right;">작성자 {{ entry2.userid }}
+&nbsp;&nbsp;&nbsp;&nbsp;| &nbsp;&nbsp;&nbsp;&nbsp;
+작성날짜 {{ entry2.year }}-{{ entry2.month }}-{{ entry2.day }} </span>
+</p>
+<hr style="width: 900px; margin-top:10px; margin-bottom:10px; size:1px;">
+<p class=showpostcontent>
+{{ entry2.content }} 
+</p>
 {% if session.logged_in %}
-
-	 <a href="{{ url_for('delpost',wnum=entry2.num) }}"><input type=button value="글삭제"></a> 
+{% if page=="1" %}
+	 <a href="{{ url_for('delpost',page=1,num=entry2.num) }}"><input type=button value="글삭제"></a>
+	 {% elif page=="2" %}
+	 <a href="{{ url_for('delpost',page=2,num=entry2.num) }}"><input type=button value="글삭제"></a>
+	 {% elif page=="3" %}
+	 <a href="{{ url_for('delpost',page=3,num=entry2.num) }}"><input type=button value="글삭제"></a>
+	 {% elif page=="4" %}
+	 <a href="{{ url_for('delpost',page=4,num=entry2.num) }}"><input type=button value="글삭제"></a>
+	 {% endif %}
 {% endif %}
+
+
+</div>
+
 
 {% endfor %}
 
 
 <CENTER>
-<ul class=entries>
-	<table width=900 border=0 cellspacing =0>
+<ul class=entriesreply>
+	<table width=800 border=0 cellspacing =0>
    		<tr>
-   			<th width=50>writer</th>
-   			<th width=100>content</th>
-   			<th width=50>date</th>
+   			<th width=120>writer</th>
+   			<th width>content</th>
+   			<th width=90>date</th>
 
    		</tr>
    		{% for entry in entries3 %}
 
    		<tr>
-   			<td style="color:#6B66FF;">{{ entry.r_userid }}</td>
-   			<td style="color:#F361A6;">{{ entry.r_content}}</td>
-   			<td style="color:#6F6F6F;font-weight: lighter;">{{ entry.r_year }}-{{ entry.r_month }}-{{ entry.r_day }}</td>
+   			<td style="color:#6B66FF;">{{ entry.userid }}</td>
+   			<td>{{ entry.content}}</td>
+   			<td style="color:#6F6F6F;font-weight: lighter;">{{ entry.year }}-{{ entry.month }}-{{ entry.day }}</td>
    		</tr>
 
 		{% else %}
-		<li><em>댓글이 없습니다.</em></li>
+		<li style="font-weight:lighter; font-size:11px; padding:5px;">댓글이 없습니다.</li>
 		{% endfor %}
 	</table>
 	</ul>
 	
 	<div class=addreply>
-<form action="{{ url_for('addreply',wnum=num) }}" method=post class=addreply> <dl>
-	<dt>댓글 <input type=text size=100 name=content>
-	<dt><input type=submit value=등록>
+{% if page=="1" %}
+<form action="{{ url_for('addreply',page=1,wnum=num) }}" method=post class=addreply> <dl>
+{% elif page=="2" %}
+<form action="{{ url_for('addreply',page=2,wnum=num) }}" method=post class=addreply> <dl>
+{% elif page=="3" %}
+<form action="{{ url_for('addreply',page=3,wnum=num) }}" method=post class=addreply> <dl>
+{% elif page=="4" %}
+<form action="{{ url_for('addreply',page=4,wnum=num) }}" method=post class=addreply> <dl>
+{% endif %}
+
+
+	<dt style="font-weight:lighter; font-size:11px; margin-top: 5px;">댓글 <input type=text size=120 name=content> <input type=submit value=등록>
  </form>
 </div>
 </CENTER>

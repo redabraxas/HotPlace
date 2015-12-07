@@ -7,7 +7,7 @@
 
  
 			<div id="community">
-			<div class="communitycontent">
+			
                 
          
                    
@@ -19,7 +19,7 @@
                 <div id = "communitymenu">
                 	<ul class="ca-menu">
                 		<li>
-                        	<a href="{{ url_for('localcomm') }}">
+                        	<a href="{{ url_for('localcomm',page=1) }}">
                         		<div class="ca-content">
                         			<h2 class="ca-main">지역별 게시판</h2>
                                 	<h3 class="ca-sub">Local community</h3>
@@ -27,7 +27,7 @@
                         	</a>
                     	</li>
                 	    <li>
-                    	    <a href="#">
+                    	    <a href="{{ url_for('localcomm',page=2) }}">
  
                         	    <div class="ca-content">
                         	        <h2 class="ca-main">창업 정보 공유</h2>
@@ -36,7 +36,7 @@
                         	</a>
                     	</li>
                     	<li>
-                        	<a href="#">
+                        	<a href="{{ url_for('localcomm',page=3) }}">
 
                             	<div class="ca-content">
                                 	<h2 class="ca-main">동업자 찾기</h2>
@@ -45,7 +45,7 @@
                         	</a>
                     	</li>
                     	<li>
-                        	<a href="#">
+                        	<a href="{{ url_for('localcomm',page=4) }}">
 
                             	<div class="ca-content">
                                		<h2 class="ca-main">고객센터</h2>
