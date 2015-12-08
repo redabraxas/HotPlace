@@ -269,7 +269,8 @@ def insert_query(data):
     if len(data['sex']) == 0 :
         data['sex'].insert(0,'woman')
         data['sex'].insert(0,'man')
-        
+    
+    print(data['sex'])        
     for i in range(len(data['sex'])):
         sextemp = data['sex'].pop()
         if('man' == sextemp):
@@ -286,27 +287,42 @@ def insert_query(data):
                     agetemp = str(agetemp2)
                     if(5 == agecount):
                         where_query+='man50>'
-                        where_query+=agetemp
+                        if agetemp :
+                            where_query+=agetemp
+                        else :
+                            where_query+=0    
                         where_query+=' and '
                         ageflag[0]=1;
                     elif(4 == agecount):
                         where_query+='man40>'
-                        where_query+=agetemp
+                        if agetemp :
+                            where_query+=agetemp
+                        else :
+                            where_query+=0    
                         where_query+=' and '
                         ageflag[1]=1;
                     elif(3 == agecount):
                         where_query+='man30>'
-                        where_query+=agetemp
+                        if agetemp :
+                            where_query+=agetemp
+                        else :
+                            where_query+=0    
                         where_query+=' and '
                         ageflag[2]=1;
                     elif(2 == agecount):
                         where_query+='man20>'
-                        where_query+=agetemp
+                        if agetemp :
+                            where_query+=agetemp
+                        else :
+                            where_query+=0    
                         where_query+=' and '
                         ageflag[3]=1;
                     elif(1 == agecount):
                         where_query+='man10>'
-                        where_query+=agetemp
+                        if agetemp :
+                            where_query+=agetemp
+                        else :
+                            where_query+=0    
                         where_query+=' and '
                         ageflag[4]=1;
                     agecount=agecount-1
@@ -324,27 +340,42 @@ def insert_query(data):
                     agetemp = str(agetemp2)
                     if(5 == agecount):
                         where_query+='woman50>'
-                        where_query+=agetemp
+                        if agetemp :
+                            where_query+=agetemp
+                        else :
+                            where_query+=0    
                         where_query+=' and '
                         ageflag[5]=1;
                     elif(4 == agecount):
                         where_query+='woman40>'
-                        where_query+=agetemp
+                        if agetemp :
+                            where_query+=agetemp
+                        else :
+                            where_query+=0    
                         where_query+=' and '
                         ageflag[6]=1;
                     elif(3 == agecount):
                         where_query+='woman30>'
-                        where_query+=agetemp
+                        if agetemp :
+                            where_query+=agetemp
+                        else :
+                            where_query+=0    
                         where_query+=' and '
                         ageflag[7]=1;
                     elif(2 == agecount):
                         where_query+='woman20>'
-                        where_query+=agetemp
+                        if agetemp :
+                            where_query+=agetemp
+                        else :
+                            where_query+=0    
                         where_query+=' and '
                         ageflag[8]=1;
                     elif(1 == agecount):
                         where_query+='woman10>'
-                        where_query+=agetemp
+                        if agetemp :
+                            where_query+=agetemp
+                        else :
+                            where_query+=0    
                         where_query+=' and '
                         ageflag[9]=1;
                     agecount=agecount-1                
@@ -365,6 +396,7 @@ def insert_query(data):
     #and 제거
     where_query = where_query[:len(where_query)-5]
     where_query += " group by num"
+    print(where_query)
     return where_query, ageflag
 
 def insert_query2(ageflag) :
@@ -457,12 +489,17 @@ def map():
             respon = urlopen("http://openapi.map.naver.com/api/geocode?" + queryString).read().decode('utf-8')
             
             soup = BeautifulSoup(respon, "html.parser")
-            
-            point = {
-                'x' : soup.x.string,
-                'y' : soup.y.string
-            }
-
+            if soup.x :
+                point = {
+                    'x' : soup.x.string,
+                    'y' : soup.y.string
+                }
+            else :
+                point = {
+                    'x' : 307677,
+                    'y' : 549510
+                }
+        
 
         else :
             point = {
@@ -751,147 +788,147 @@ def addBookmark():
             'time' : request.form.getlist('time', None),
             'addr' : request.form['addr']
         }
-    # data 를 이용하여 bookmark table에 저장하고, 사용자의 전체 북마크 리스트를 entries에 반환
-    #입력할 최고의 수치
-    where_query = ""
-    where_qeury2 = ""
-    where_query,ageflag = insert_query(data)
-    where_query2 = insert_query2(ageflag)
-    if where_query2 :
-        where_query+= " order by maxpop desc;"
+        m_data = data;
+        # data 를 이용하여 bookmark table에 저장하고, 사용자의 전체 북마크 리스트를 entries에 반환
+        #입력할 최고의 수치
+        where_query = ""
+        where_qeury2 = ""
+        where_query,ageflag = insert_query(data)
+        where_query2 = insert_query2(ageflag)
+        if where_query2 :
+            where_query+= " order by maxpop desc;"
 
-    finalwhere_query =  'select *'+where_query2+' from population '+where_query
-    cur = g.db.execute(finalwhere_query)
-    m_row = cur.fetchone()
-    print(m_row)
-
-    #여기 수정 / 테이블 수정
-    addbookmark_sql = '''insert into bookmark(
-    p_year,p_month,p_day,isholiday,p_time,
-    location,mapx,mapy,weather,man10,
-    man20,man30,man40,man50,woman10,
-    woman20,woman30,woman40,woman50,b_id,
-    tag,man,woman,p_num10,p_num20,
-    p_num30,p_num40,p_num50,m1,m2,
-    m3,m4,m5,m6,m7,
-    m8,m9,m10,m11,m12,
-    evening,afternoon) values(
-    ?,?,?,?,?,
-    ?,?,?,?,?,
-    ?,?,?,?,?,
-    ?,?,?,?,?,
-    ?,?,?,?,?,
-    ?,?,?,?,?,
-    ?,?,?,?,?,
-    ?,?,?,?,?,
-    ?,?)'''
+        finalwhere_query =  'select *'+where_query2+' from population '+where_query
+        cur = g.db.execute(finalwhere_query)
+        m_row = cur.fetchone()
+    
+        #여기 수정 / 테이블 수정
+        addbookmark_sql = '''insert into bookmark(
+        p_year,p_month,p_day,isholiday,p_time,
+        location,mapx,mapy,weather,man10,
+        man20,man30,man40,man50,woman10,
+        woman20,woman30,woman40,woman50,b_id,
+        tag,man,woman,p_num10,p_num20,
+        p_num30,p_num40,p_num50,m1,m2,
+        m3,m4,m5,m6,m7,
+        m8,m9,m10,m11,m12,
+        evening,afternoon) values(
+        ?,?,?,?,?,
+        ?,?,?,?,?,
+        ?,?,?,?,?,
+        ?,?,?,?,?,
+        ?,?,?,?,?,
+        ?,?,?,?,?,
+        ?,?,?,?,?,
+        ?,?,?,?,?,
+        ?,?)'''
 
     
-    #bool입력할 것들
-    #성별
-    #user = session['id']
-    user = "A"
-    s1 = False
-    s2 = False
-    while data['sex']:
-        s_temp = data['sex'].pop()
-        if(s_temp=='man'):
-            s1 = True
-        elif(s_temp=='woman'):
-            s2 = True
-
-    p_count=0 
-    p_num5=0
-    p_num4=0
-    p_num3=0
-    p_num2=0
-    p_num1=0
-    while data['age']:
-        p_temp = data['age'].pop()
-        if(p_count==0):
-            p_num5 = p_temp
-        elif(p_count==1):
-            p_num4 = p_temp
-        elif(p_count==2):
-            p_num3 = p_temp
-        elif(p_count==3):
-            p_num2 = p_temp
-        elif(p_count==4):
-            p_num1 = p_temp
-        p_count= p_count+1
+        #bool입력할 것들
+        #성별
+        #user = session['id']
+        user = "A"
+        s1 = 0
+        s2 = 0
+        while len(m_data['sex']) != 0:
+            s_temp = m_data['sex'].pop()
+            if s_temp=='man':
+                s1 = 1
+            elif s_temp=='woman':
+                s2 = 1
+        p_count=0 
+        p_num5=0
+        p_num4=0
+        p_num3=0
+        p_num2=0
+        p_num1=0
+        while data['age']:
+            p_temp = data['age'].pop()
+            if(p_count==0):
+                p_num5 = p_temp
+            elif(p_count==1):
+                p_num4 = p_temp
+            elif(p_count==2):
+                p_num3 = p_temp
+            elif(p_count==3):
+                p_num2 = p_temp
+            elif(p_count==4):
+                p_num1 = p_temp
+            p_count= p_count+1
     
-    m1 = False
-    m2 = False
-    m3 = False
-    m4 = False
-    m5 = False
-    m6 = False
-    m7 = False
-    m8 = False
-    m9 = False
-    m10 = False
-    m11 = False
-    m12 = False
+        m1 = 0
+        m2 = 0
+        m3 = 0
+        m4 = 0
+        m5 = 0
+        m6 = 0
+        m7 = 0
+        m8 = 0
+        m9 = 0
+        m10 = 0
+        m11 = 0
+        m12 = 0
 
-    while data['month']:
-        m_temp = data['month'].pop()
-        if(m_temp == 1):
-            m1 = True
-        elif(m_temp==2):
-            m2 = True
-        elif(m_temp==3):
-            m3 = True
-        elif(m_temp==4):
-            m4 = True
-        elif(m_temp==5):
-            m5 = True
-        elif(m_temp==6):
-            m6 = True
-        elif(m_temp==7):
-            m7 = True
-        elif(m_temp==8):
-            m8 = True
-        elif(m_temp==9):
-            m9 = True
-        elif(m_temp==10):
-            m10 = True
-        elif(m_temp==11):
-            m11 = True
-        elif(m_temp==12):
-            m12 = True
+        while data['month']:
+            m_temp = data['month'].pop()
+            if(m_temp == 1):
+                m1 = 1
+            elif(m_temp==2):
+                m2 = 1
+            elif(m_temp==3):
+                m3 = 1
+            elif(m_temp==4):
+                m4 = 1
+            elif(m_temp==5):
+                m5 = 1
+            elif(m_temp==6):
+                m6 = 1
+            elif(m_temp==7):
+                m7 = 1
+            elif(m_temp==8):
+                m8 = 1
+            elif(m_temp==9):
+                m9 = 1
+            elif(m_temp==10):
+                m10 = 1
+            elif(m_temp==11):
+                m11 = 1
+            elif(m_temp==12):
+                m12 = 1
     
-    d1 = False
-    d2 = False
-    while data['time']:
-        d_temp = data['time'].pop()
-        if(d_temp == 'evening'):
-            d1 = True
-        elif(d_temp == 'afternoon'):
-            d2 = True
+        d1 = 0
+        d2 = 0
+        while data['time']:
+            d_temp = data['time'].pop()
+            if(d_temp == 'evening'):
+                d1 = 1
+            elif(d_temp == 'afternoon'):
+                d2 = 1
     
-    my_tag = " "
-    if data['addr'] :
-        my_tag = data['addr']
+        my_tag = " "
+        if data['addr'] :
+            my_tag = data['addr']
 
-    #여기서 값이 잘못 들어 간것
-    g.db.execute(addbookmark_sql,(m_row[1],m_row[2],m_row[3],m_row[4],m_row[5],m_row[6],m_row[7],m_row[8],m_row[9],m_row[10],m_row[11],m_row[12],m_row[13],m_row[14],m_row[15],m_row[16],m_row[17],m_row[18],m_row[19],user,my_tag,s1,s2,p_num1,p_num2,p_num3,p_num4,p_num5,m1,m2,m3,m4,m5,m6,m7,m8,m9,m10,m11,m12,d1,d2))
-    g.db.commit()
-        #19개
-        #
-        #entry 
-        #id라고 써도 되나
-    cur = g.db.execute('select * from bookmark')
-    testrow = cur.fetchone()
-    entries = [dict(b_num = row[0], year=row[1], month=row[2],  day=row[3],  time=row[5], isholiday=row[4],  
-        location=row[6], mapx=row[7], mapy=row[8], weather=row[9], 
-        man10=row[10], man20=row[11], man30=row[12], man40=row[13], man50=row[14],
-        woman10=row[15], woman20=row[16], woman30=row[17], woman40=row[18], woman50=row[19],
-        id=row[20], tag=row[21], man =row[22], woman = row[23], p_num10 = row[24],
-        p_num20 = row[25], p_num30 = row[26], p_num40 = row[27], p_num50 = row[28], m1= row[29],
-        m2 = row[30], m3 = row[31], m4 = row[32], m5 = row[33], m6 = row[34],
-        m7 = row[35], m8 = row[36], m9 = row[37], m10 = row[38], m11 = row[39],
-        m12 = row[40],evening = row[41], afternoon = row[42])for row in cur.fetchall()]
-    return render_template('bookmark.html', entries=entries)
+        #여기서 값이 잘못 들어 간것
+        g.db.execute(addbookmark_sql,(m_row[1],m_row[2],m_row[3],m_row[4],m_row[5],m_row[6],m_row[7],m_row[8],m_row[9],m_row[10],m_row[11],m_row[12],m_row[13],m_row[14],m_row[15],m_row[16],m_row[17],m_row[18],m_row[19],user,my_tag,s1,s2,p_num1,p_num2,p_num3,p_num4,p_num5,m1,m2,m3,m4,m5,m6,m7,m8,m9,m10,m11,m12,d1,d2))
+        print(cur.fetchone()) 
+        g.db.commit()
+            #19개
+            #
+            #entry 
+            #id라고 써도 되나
+        cur = g.db.execute('select * from bookmark')
+        testrow = cur.fetchone()
+        entries = [dict(b_num = row[0], year=row[1], month=row[2],  day=row[3],  time=row[5], isholiday=row[4],  
+            location=row[6], mapx=row[7], mapy=row[8], weather=row[9], 
+            man10=row[10], man20=row[11], man30=row[12], man40=row[13], man50=row[14],
+            woman10=row[15], woman20=row[16], woman30=row[17], woman40=row[18], woman50=row[19],
+            id=row[20], tag=row[21], man =row[22], woman = row[23], p_num10 = row[24],
+            p_num20 = row[25], p_num30 = row[26], p_num40 = row[27], p_num50 = row[28], m1= row[29],
+            m2 = row[30], m3 = row[31], m4 = row[32], m5 = row[33], m6 = row[34],
+            m7 = row[35], m8 = row[36], m9 = row[37], m10 = row[38], m11 = row[39],
+            m12 = row[40],evening = row[41], afternoon = row[42])for row in cur.fetchall()]
+        return render_template('bookmark.html', entries=entries)
 
 @app.route('/map/<bnum>', methods=['GET','POST'])
 def clickBookmark(bnum):
@@ -912,121 +949,169 @@ def clickBookmark(bnum):
     
 
     #tag
-    data = {'sex':[], 'age':[], 'month': [], 'time': [], 'addr' :""}
+    data = {'sex':[], 'age':[], 'month':[], 'time':[], 'addr' :""}
     
     for my in  mys:
-        print(my['tag'])
         if not my['tag'] == " ":
-            my_query += "tag = '"
+            my_query += "location = '%"
             my_query += my['tag']
-            my_query += "' and "
+            my_query += "%' and "
             data['addr'] = my['tag']
         #boy
         agetemp = 0
         if my['man'] == 1:
-            data['sex'].insert(0,'man')
+            data['sex'].append('man')
             agetemp = my['p_num50']
             my_query += 'man50>'
-            my_query += agetemp    
-            data['age'].insert(0,agetemp)
+            if agetemp :
+                where_query+=agetemp
+                data['age'].append('agetemp')
+            else :
+                where_query+=0    
+                data['age'].append('0')
             my_query += ' and ' 
             
             agetemp = my['p_num40']
             my_query += 'man40>'
-            my_query += agetemp    
-            data['age'].insert(0,agetemp)
+            if agetemp :
+                where_query+=agetemp
+                data['age'].append('agetemp')
+            else :
+                where_query+=0    
+                data['age'].append('0')
             my_query += ' and ' 
             
             agetemp = my['p_num30']
             my_query += 'man30>'
-            my_query += agetemp    
-            data['age'].insert(0,agetemp)
+            if agetemp :
+                where_query+=agetemp
+                data['age'].append('agetemp')
+            else :
+                where_query+=0    
+                data['age'].append('0')
             my_query += ' and ' 
             
             agetemp = my['p_num20']
             my_query += 'man20>'
-            data['age'].insert(0,agetemp)
-            my_query += agetemp    
+            if agetemp :
+                where_query+=agetemp
+                data['age'].append('agetemp')
+            else :
+                where_query+=0    
+                data['age'].append('0')
             my_query += ' and ' 
             
             agetemp = my['p_num10']
             my_query += 'man10>'
-            my_query += agetemp    
-            data['age'].insert(0,agetemp)
+            if agetemp :
+                where_query+=agetemp
+                data['age'].append('agetemp')
+            else :
+                where_query+=0    
+                data['age'].append('0')
             my_query += ' and ' 
             
         if my['woman'] == 1:
-            data['sex'].insert(0,'woman')
             agetemp = my['p_num50']
             my_query += 'woman50>'
-            my_query += agetemp    
+            if agetemp :
+                where_query+=agetemp
+                data['age'].append('agetemp')
+            else :
+                where_query+=0    
+                data['age'].append('0')
             my_query += ' and ' 
             
             agetemp = my['p_num40']
             my_query += 'woman40>'
-            my_query += agetemp    
+            if agetemp :
+                where_query+=agetemp
+                data['age'].append('agetemp')
+            else :
+                where_query+=0    
+                data['age'].append('0')
             my_query += ' and ' 
             
             agetemp = my['p_num30']
             my_query += 'woman30>'
-            my_query += agetemp    
+            if agetemp :
+                where_query+=agetemp
+                data['age'].append('agetemp')
+            else :
+                where_query+=0    
+                data['age'].append('0')
             my_query += ' and ' 
             
             agetemp = my['p_num20']
             my_query += 'woman20>'
-            my_query += agetemp    
+            if agetemp :
+                where_query+=agetemp
+                data['age'].append('agetemp')
+            else :
+                where_query+=0    
+                data['age'].append('0')
             my_query += ' and ' 
             
             agetemp = my['p_num10']
             my_query += 'woman10>'
-            my_query += agetemp    
+            if agetemp :
+                where_query+=agetemp
+                data['age'].append('agetemp')
+            else :
+                where_query+=0    
+                data['age'].append('0')
             my_query += ' and ' 
-            
+        data['age'] = list(set(data['age']))
+    
         if(my['m1']==1):
             my_query += 'p_month = 1  or '
-            data['month'].insert(0,1)
+            data['month'].append(1)
         if(my['m2']==1):
             my_query += 'p_month = 2  or '
-            data['month'].insert(0,2)
+            data['month'].append(2)
         if(my['m3']==1):
             my_query += 'p_month = 3  or '
-            data['month'].insert(0,3)
+            data['month'].append(3)
         if(my['m4']==1):
             my_query += 'p_month = 4  or '
-            data['month'].insert(0,4)
+            data['month'].append(4)
         if(my['m5']==1):
             my_query += 'p_month = 5  or '
-            data['month'].insert(0,5)
+            data['month'].append(5)
         if(my['m6']==1):
             my_query += 'p_month = 6  or '
-            data['month'].insert(0,6)
+            data['month'].append(6)
         if(my['m7']==1):
             my_query += 'p_month = 7  or '
-            data['month'].insert(0,7)
+            data['month'].append(7)
         if(my['m8']==1):
             my_query += 'p_month = 8  or '
-            data['month'].insert(0,8)
+            data['month'].append(8)
         if(my['m9']==1):
             my_query += 'p_month = 9  or '
-            data['month'].insert(0,9)
+            data['month'].append(9)
         if(my['m10']==1):
             my_query += 'p_month = 10  or '
-            data['month'].insert(0,10)
+            data['month'].append(10)
         if(my['m11']==1):
             my_query += 'p_month = 11  or '
-            data['month'].insert(0,11)
+            data['month'].append(11)
         if(my['m12']==1):
             my_query += 'p_month = 12  or '
-            data['month'].insert(0,12)
+            data['month'].append(12)
     
         if(my['evening']==1):
             my_query += "p_time like '%12시%'  or "
-            data['time'].insert(0,'evening')
+            data['time'].append('evening')
         if(my['afternoon']==1):
             my_query += "p_time like '%19시%'  or "
-            data['time'].insert(0,'afternoon')
+            data['time'].append('afternoon')
     
-    my_query = my_query[:len(my_query)-4]
+    if my_query == "select * from population where " :
+        my_query = my_query[:len(my_query)-6]
+    else :
+        my_query = my_query[:len(my_query)-4]
+    print(my_query)
     cur = g.db.execute(my_query)
     
     entries = [dict(b_num = row[0], year=row[1], month=row[2],  day=row[3],  time=row[5], isholiday=row[4],  
@@ -1034,8 +1119,39 @@ def clickBookmark(bnum):
         man10=row[10], man20=row[11], man30=row[12], man40=row[13], man50=row[14],
         woman10=row[15], woman20=row[16], woman30=row[17], woman40=row[18], woman50=row[19]
         )for row in cur.fetchall()]
-    #point #data
-    return render_template('map.html',data=data, entries=entries)
+    print(data)
+    
+    if data['addr']:
+        NAVERKEY  = "7f988a1d3bc4b0767fef224ef85d1743"
+
+        params = {
+            "query": data['addr'],
+            "output": "xml",
+            "key": NAVERKEY,
+            "encoding" : "utf-8",
+            "coord" : "tm128"
+        }
+        queryString = urlencode(params)
+        respon = urlopen("http://openapi.map.naver.com/api/geocode?" + queryString).read().decode('utf-8')
+            
+        soup = BeautifulSoup(respon, "html.parser")
+        if soup.x :
+            point = {
+                'x' : soup.x.string,
+                'y' : soup.y.string
+            }
+        else :
+            point = {
+                'x' : 307677,
+                'y' : 549510
+            }
+    else :
+         point = {
+            'x' : 307677,
+            'y' : 549510
+        }
+        
+    return render_template('map.html',data=data, entries=entries,point=point)
 
 #######end bookmark part #######
 
