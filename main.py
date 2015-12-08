@@ -264,7 +264,12 @@ def insert_query(data):
         where_query+= "location like '%"
         where_query+= locationtemp
         where_query+= "%' and "
+    #새로추가
     
+    if len(data['sex']) == 0 :
+        data['sex'].insert(0,'woman')
+        data['sex'].insert(0,'man')
+        
     for i in range(len(data['sex'])):
         sextemp = data['sex'].pop()
         if('man' == sextemp):
@@ -907,42 +912,51 @@ def clickBookmark(bnum):
     
 
     #tag
+    data = {'sex':[], 'age':[], 'month': [], 'time': [], 'addr' :""}
+    
     for my in  mys:
         print(my['tag'])
         if not my['tag'] == " ":
             my_query += "tag = '"
             my_query += my['tag']
             my_query += "' and "
-    
+            data['addr'] = my['tag']
         #boy
         agetemp = 0
         if my['man'] == 1:
+            data['sex'].insert(0,'man')
             agetemp = my['p_num50']
             my_query += 'man50>'
             my_query += agetemp    
+            data['age'].insert(0,agetemp)
             my_query += ' and ' 
             
             agetemp = my['p_num40']
             my_query += 'man40>'
             my_query += agetemp    
+            data['age'].insert(0,agetemp)
             my_query += ' and ' 
             
             agetemp = my['p_num30']
             my_query += 'man30>'
             my_query += agetemp    
+            data['age'].insert(0,agetemp)
             my_query += ' and ' 
             
             agetemp = my['p_num20']
             my_query += 'man20>'
+            data['age'].insert(0,agetemp)
             my_query += agetemp    
             my_query += ' and ' 
             
             agetemp = my['p_num10']
             my_query += 'man10>'
             my_query += agetemp    
+            data['age'].insert(0,agetemp)
             my_query += ' and ' 
             
         if my['woman'] == 1:
+            data['sex'].insert(0,'woman')
             agetemp = my['p_num50']
             my_query += 'woman50>'
             my_query += agetemp    
@@ -970,33 +984,47 @@ def clickBookmark(bnum):
             
         if(my['m1']==1):
             my_query += 'p_month = 1  or '
+            data['month'].insert(0,1)
         if(my['m2']==1):
             my_query += 'p_month = 2  or '
+            data['month'].insert(0,2)
         if(my['m3']==1):
             my_query += 'p_month = 3  or '
+            data['month'].insert(0,3)
         if(my['m4']==1):
             my_query += 'p_month = 4  or '
+            data['month'].insert(0,4)
         if(my['m5']==1):
             my_query += 'p_month = 5  or '
+            data['month'].insert(0,5)
         if(my['m6']==1):
             my_query += 'p_month = 6  or '
+            data['month'].insert(0,6)
         if(my['m7']==1):
             my_query += 'p_month = 7  or '
+            data['month'].insert(0,7)
         if(my['m8']==1):
             my_query += 'p_month = 8  or '
+            data['month'].insert(0,8)
         if(my['m9']==1):
             my_query += 'p_month = 9  or '
+            data['month'].insert(0,9)
         if(my['m10']==1):
             my_query += 'p_month = 10  or '
+            data['month'].insert(0,10)
         if(my['m11']==1):
             my_query += 'p_month = 11  or '
+            data['month'].insert(0,11)
         if(my['m12']==1):
             my_query += 'p_month = 12  or '
+            data['month'].insert(0,12)
     
         if(my['evening']==1):
             my_query += "p_time like '%12시%'  or "
+            data['time'].insert(0,'evening')
         if(my['afternoon']==1):
             my_query += "p_time like '%19시%'  or "
+            data['time'].insert(0,'afternoon')
     
     my_query = my_query[:len(my_query)-4]
     cur = g.db.execute(my_query)
@@ -1007,7 +1035,7 @@ def clickBookmark(bnum):
         woman10=row[15], woman20=row[16], woman30=row[17], woman40=row[18], woman50=row[19]
         )for row in cur.fetchall()]
     #point #data
-    return render_template('map.html',entries=entries)
+    return render_template('map.html',data=data, entries=entries)
 
 #######end bookmark part #######
 
