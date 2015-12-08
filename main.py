@@ -357,20 +357,25 @@ def insert_query(data):
 
     #and 제거
     where_query = where_query[:len(where_query)-5]
+    where_query += " group by num"
     return where_query, ageflag
 
 def insert_query2(ageflag) :
-    where_query2 = ",(select Max("
+    #where_query2 = ",(select Max("
+    where_query2 = ",(select ("
+    
     agetemp2=0
     query_flag=False
     for i in range(10):
         if(ageflag[i]==1):
+            where_query2+="SUM("
             if(i>=5):
                 agetemp2=50
                 where_query2+="wo"
             where_query2+="man"
             where_query2+=str(50-i*10+agetemp2)
-            where_query2+=", "
+            where_query2+=")+ "
+            #where_query2+=", "
             query_flag=True
      #쉼표 제거
     where_query2 = where_query2[:len(where_query2)-2]
@@ -782,12 +787,17 @@ def addBookmark():
     s2 = False
     while data['sex']:
         s_temp = data['sex'].pop()
-
         if(s_temp=='man'):
             s1 = True
         elif(s_temp=='woman'):
             s2 = True
+
     p_count=0 
+    p_num5=0
+    p_num4=0
+    p_num3=0
+    p_num2=0
+    p_num1=0
     while data['age']:
         p_temp = data['age'].pop()
         if(p_count==0):
@@ -871,19 +881,31 @@ def addBookmark():
     
     return render_template('bookmark.html', entries=entries)
 
-@app.route('/map/', methods=['GET','POST'])
+@app.route('/map/<bnum>', methods=['GET','POST'])
 def clickBookmark(bnum):
     # bnum 을 이용한 map검색 결과를 entries에 저장 
     
-    cur = g.db.execute('select * from bookmark where b_num ='+bnum)
+    cur = g.db.execute('select * from bookmark where b_num =(?)',(bnum,))
     #cur = g.db.execute('select * from bookmark')
+    my_entries = [dict(b_num = row[0], year=row[1], month=row[2],  day=row[3],  time=row[5], isholiday=row[4],  
+        location=row[6], mapx=row[7], mapy=row[8], weather=row[9], 
+        man10=row[10], man20=row[11], man30=row[12], man40=row[13], man50=row[14],
+        woman10=row[15], woman20=row[16], woman30=row[17], woman40=row[18], woman50=row[19],
+        id=row[20], tag=row[21], man =row[22], woman = row[23], p_num10 = row[24],
+        p_num20 = row[25], p_num30 = row[26], p_num40 = row[27], p_num50 = row[28], m1= row[29],
+        m2 = row[30], m3 = row[31], m4 = row[32], m5 = row[33], m6 = row[34],
+        m7 = row[35], m8 = row[36], m9 = row[37], m10 = row[38], m11 = row[39],
+        m12 = row[40],evening = row[41], afternoon = row[42])for row in cur.fetchall()]
+    
+    
+
     entries = [dict(b_num = row[0], year=row[1], month=row[2],  day=row[3],  time=row[5], isholiday=row[4],  
         location=row[6], mapx=row[7], mapy=row[8], weather=row[9], 
         man10=row[10], man20=row[11], man30=row[12], man40=row[13], man50=row[14],
         woman10=row[15], woman20=row[16], woman30=row[17], woman40=row[18], woman50=row[19]
         )for row in cur.fetchall()]
     
-    return render_template('map.html', data=data, entries=entries, point= point)
+    return render_template('map.html',entries=entries)
 
 #######end bookmark part #######
 
