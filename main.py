@@ -192,6 +192,7 @@ def init_bookmark():
     con=sqlite3.connect("test.db")
     cur=con.cursor()
     #cur.execute('drop table bookmark')
+    #con.commit()
     #즐겨찾기 테이블 추가
     #id 외래키로 가져오는 방법..?
 
@@ -731,8 +732,6 @@ def getBookmarkList():
         m12 = row[40],evening = row[41], afternoon = row[42])for row in cur.fetchall()]
     return render_template('bookmark.html', entries=entries)
 
-
-
 @app.route('/bookmark/', methods=['POST'])
 def addBookmark():
 
@@ -745,9 +744,8 @@ def addBookmark():
             'addr' : request.form['addr']
         }
 
-        # data 를 이용하여 bookmark table에 저장하고, 사용자의 전체 북마크 리스트를 entries에 반환
+    # data 를 이용하여 bookmark table에 저장하고, 사용자의 전체 북마크 리스트를 entries에 반환
     #입력할 최고의 수치
-    user = "A"
     where_query = ""
     where_qeury2 = ""
     where_query,ageflag = insert_query(data)
@@ -778,11 +776,12 @@ def addBookmark():
     ?,?,?,?,?,
     ?,?,?,?,?,
     ?,?)'''
-    #
+
     
     #bool입력할 것들
     #성별
     #user = session['id']
+    user = "A"
     s1 = False
     s2 = False
     while data['sex']:
@@ -860,14 +859,16 @@ def addBookmark():
             d1 = True
         elif(d_temp == 'afternoon'):
             d2 = True
-
-    my_tag = data['addr']
+    
+    my_tag = " "
+    if data['addr'] :
+        my_tag = data['addr']
     g.db.execute(addbookmark_sql,(m_row[1],m_row[2],m_row[3],m_row[4],m_row[5],m_row[6],m_row[7],m_row[8],m_row[9],m_row[10],m_row[11],m_row[12],m_row[13],m_row[14],m_row[15],m_row[16],m_row[17],m_row[18],m_row[0],user,my_tag,s1,s2,p_num1,p_num2,p_num3,p_num4,p_num5,m1,m2,m3,m4,m5,m6,m7,m8,m9,m10,m11,m12,d1,d2))
     g.db.commit()
-    #19개
-    #
-    #entry 
-    #id라고 써도 되나
+        #19개
+        #
+        #entry 
+        #id라고 써도 되나
     cur = g.db.execute('select * from bookmark')
     entries = [dict(b_num = row[0], year=row[1], month=row[2],  day=row[3],  time=row[5], isholiday=row[4],  
         location=row[6], mapx=row[7], mapy=row[8], weather=row[9], 
@@ -878,7 +879,6 @@ def addBookmark():
         m2 = row[30], m3 = row[31], m4 = row[32], m5 = row[33], m6 = row[34],
         m7 = row[35], m8 = row[36], m9 = row[37], m10 = row[38], m11 = row[39],
         m12 = row[40],evening = row[41], afternoon = row[42])for row in cur.fetchall()]
-    
     return render_template('bookmark.html', entries=entries)
 
 @app.route('/map/<bnum>', methods=['GET','POST'])
@@ -886,8 +886,7 @@ def clickBookmark(bnum):
     # bnum 을 이용한 map검색 결과를 entries에 저장 
     
     cur = g.db.execute('select * from bookmark where b_num =(?)',(bnum,))
-    #cur = g.db.execute('select * from bookmark')
-    my_entries = [dict(b_num = row[0], year=row[1], month=row[2],  day=row[3],  time=row[5], isholiday=row[4],  
+    mys = [dict(b_num = row[0], year=row[1], month=row[2],  day=row[3],  time=row[5], isholiday=row[4],  
         location=row[6], mapx=row[7], mapy=row[8], weather=row[9], 
         man10=row[10], man20=row[11], man30=row[12], man40=row[13], man50=row[14],
         woman10=row[15], woman20=row[16], woman30=row[17], woman40=row[18], woman50=row[19],
@@ -897,8 +896,101 @@ def clickBookmark(bnum):
         m7 = row[35], m8 = row[36], m9 = row[37], m10 = row[38], m11 = row[39],
         m12 = row[40],evening = row[41], afternoon = row[42])for row in cur.fetchall()]
     
+    my_query = "select * from population where "
+    #tag
+    for my in  mys:
+        if my['tag'] != " ":
+            my_query += "tag = '"
+            my_query += my['tag']
+            my_query += "' and "
     
-
+        #boy
+        agetemp = 0
+        if my['man'] == 1:
+            agetemp = my['p_num50']
+            my_query += 'man50>'
+            my_query += agetemp    
+            my_query += ' and ' 
+            
+            agetemp = my['p_num40']
+            my_query += 'man40>'
+            my_query += agetemp    
+            my_query += ' and ' 
+            
+            agetemp = my['p_num30']
+            my_query += 'man30>'
+            my_query += agetemp    
+            my_query += ' and ' 
+            
+            agetemp = my['p_num20']
+            my_query += 'man20>'
+            my_query += agetemp    
+            my_query += ' and ' 
+            
+            agetemp = my['p_num10']
+            my_query += 'man10>'
+            my_query += agetemp    
+            my_query += ' and ' 
+            
+        if my['woman'] == 1:
+            agetemp = my['p_num50']
+            my_query += 'woman50>'
+            my_query += agetemp    
+            my_query += ' and ' 
+            
+            agetemp = my['p_num40']
+            my_query += 'woman40>'
+            my_query += agetemp    
+            my_query += ' and ' 
+            
+            agetemp = my['p_num30']
+            my_query += 'woman30>'
+            my_query += agetemp    
+            my_query += ' and ' 
+            
+            agetemp = my['p_num20']
+            my_query += 'woman20>'
+            my_query += agetemp    
+            my_query += ' and ' 
+            
+            agetemp = my['p_num10']
+            my_query += 'woman10>'
+            my_query += agetemp    
+            my_query += ' and ' 
+            
+        if(my['m1']==1):
+            my_query += 'p_month = 1 and '
+        if(my['m2']==1):
+            my_query += 'p_month = 2 and '
+        if(my['m3']==1):
+            my_query += 'p_month = 3 and '
+        if(my['m4']==1):
+            my_query += 'p_month = 4 and '
+        if(my['m5']==1):
+            my_query += 'p_month = 5 and '
+        if(my['m6']==1):
+            my_query += 'p_month = 6 and '
+        if(my['m7']==1):
+            my_query += 'p_month = 7 and '
+        if(my['m8']==1):
+            my_query += 'p_month = 8 and '
+        if(my['m9']==1):
+            my_query += 'p_month = 9 and '
+        if(my['m10']==1):
+            my_query += 'p_month = 10 and '
+        if(my['m11']==1):
+            my_query += 'p_month = 11 and '
+        if(my['m12']==1):
+            my_query += 'p_month = 12 and '
+    
+        if(my['evening']==1):
+            my_query += "p_time like '%12시%' and "
+        if(my['afternoon']==1):
+            my_query += "p_time like '%19시%' and "
+    
+    my_query = my_query[:len(my_query)-4]
+    cur = g.db.execute(my_query)
+    
     entries = [dict(b_num = row[0], year=row[1], month=row[2],  day=row[3],  time=row[5], isholiday=row[4],  
         location=row[6], mapx=row[7], mapy=row[8], weather=row[9], 
         man10=row[10], man20=row[11], man30=row[12], man40=row[13], man50=row[14],
