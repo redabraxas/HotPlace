@@ -651,7 +651,7 @@ def delpost(page,num):
             g.db.commit()
             return redirect(url_for('localcomm',page=1))
         else:
-            return "권한이 없습니다"
+            return render_template('no.html')
     elif page=="2":
         cur=g.db.execute('select i_userid from information where i_num=(?);',(num,))
         for row in cur:
@@ -661,7 +661,7 @@ def delpost(page,num):
             g.db.commit()
             return redirect(url_for('localcomm',page=2))
         else:
-            return "권한이 없습니다"
+            return render_template('no.html')
     elif page=="3":
         cur=g.db.execute('select p_userid from partner where p_num=(?);',(num,))
         for row in cur:
@@ -671,7 +671,7 @@ def delpost(page,num):
             g.db.commit()
             return redirect(url_for('localcomm',page=3))
         else:
-            return "권한이 없습니다"
+            return render_template('no.html')
     elif page=="4":
         cur=g.db.execute('select s_userid from service where s_num=(?);',(num,))
         for row in cur:
@@ -681,7 +681,7 @@ def delpost(page,num):
             g.db.commit()
             return redirect(url_for('localcomm',page=4))
         else:
-            return "권한이 없습니다"
+            return render_template('no.html')
 
 @app.route('/addreply/<page>/<wnum>', methods=['POST'])
 def addreply(page,wnum):
