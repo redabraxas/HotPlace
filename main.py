@@ -6,6 +6,7 @@ import time
 from urllib.request import urlopen
 from urllib.parse import urljoin, urlencode
 from bs4 import BeautifulSoup
+from copy import deepcopy
 import json
 
 #configuration
@@ -279,6 +280,7 @@ def insert_query(data):
             for i in range(agesize):
                 #마지막 원소를 첫원소에 저장
                 agetemp2 = data['age'].pop()
+                print(agetemp2)
                 data['age'].insert(0,agetemp2)
                 if(agetemp2 == 0):
                     agecount=agecount-1
@@ -288,41 +290,41 @@ def insert_query(data):
                     if(5 == agecount):
                         where_query+='man50>'
                         if agetemp :
-                            where_query+=agetemp
+                            where_query+=str(agetemp)
                         else :
-                            where_query+=0    
+                            where_query+=str(0)    
                         where_query+=' and '
                         ageflag[0]=1;
                     elif(4 == agecount):
                         where_query+='man40>'
                         if agetemp :
-                            where_query+=agetemp
+                            where_query+=str(agetemp)
                         else :
-                            where_query+=0    
+                            where_query+=str(0)    
                         where_query+=' and '
                         ageflag[1]=1;
                     elif(3 == agecount):
                         where_query+='man30>'
                         if agetemp :
-                            where_query+=agetemp
+                            where_query+=str(agetemp)
                         else :
-                            where_query+=0    
+                            where_query+=str(0)    
                         where_query+=' and '
                         ageflag[2]=1;
                     elif(2 == agecount):
                         where_query+='man20>'
                         if agetemp :
-                            where_query+=agetemp
+                            where_query+=str(agetemp)
                         else :
-                            where_query+=0    
+                            where_query+=str(0)    
                         where_query+=' and '
                         ageflag[3]=1;
                     elif(1 == agecount):
                         where_query+='man10>'
                         if agetemp :
-                            where_query+=agetemp
+                            where_query+=str(agetemp)
                         else :
-                            where_query+=0    
+                            where_query+=str(0)    
                         where_query+=' and '
                         ageflag[4]=1;
                     agecount=agecount-1
@@ -332,6 +334,7 @@ def insert_query(data):
             agesize = len(data['age'])
             for i in range(agesize):
                 agetemp2 = data['age'].pop()
+                print(agetemp2)
                 data['age'].insert(0,agetemp2)
                 if(agetemp2 == 0):
                     agecount=agecount-1
@@ -341,41 +344,41 @@ def insert_query(data):
                     if(5 == agecount):
                         where_query+='woman50>'
                         if agetemp :
-                            where_query+=agetemp
+                            where_query+=str(agetemp)
                         else :
-                            where_query+=0    
+                            where_query+=str(0)    
                         where_query+=' and '
                         ageflag[5]=1;
                     elif(4 == agecount):
                         where_query+='woman40>'
                         if agetemp :
-                            where_query+=agetemp
+                            where_query+=str(agetemp)
                         else :
-                            where_query+=0    
+                            where_query+=str(0)    
                         where_query+=' and '
                         ageflag[6]=1;
                     elif(3 == agecount):
                         where_query+='woman30>'
                         if agetemp :
-                            where_query+=agetemp
+                            where_query+=str(agetemp)
                         else :
-                            where_query+=0    
+                            where_query+=str(0)    
                         where_query+=' and '
                         ageflag[7]=1;
                     elif(2 == agecount):
                         where_query+='woman20>'
                         if agetemp :
-                            where_query+=agetemp
+                            where_query+=str(agetemp)
                         else :
-                            where_query+=0    
+                            where_query+=str(0)    
                         where_query+=' and '
                         ageflag[8]=1;
                     elif(1 == agecount):
                         where_query+='woman10>'
                         if agetemp :
-                            where_query+=agetemp
+                            where_query+=str(agetemp)
                         else :
-                            where_query+=0    
+                            where_query+=str(0)    
                         where_query+=' and '
                         ageflag[9]=1;
                     agecount=agecount-1                
@@ -788,7 +791,8 @@ def addBookmark():
             'time' : request.form.getlist('time', None),
             'addr' : request.form['addr']
         }
-        m_data = data;
+        m_data = deepcopy(data)
+        print(m_data)
         # data 를 이용하여 bookmark table에 저장하고, 사용자의 전체 북마크 리스트를 entries에 반환
         #입력할 최고의 수치
         where_query = ""
@@ -842,8 +846,8 @@ def addBookmark():
         p_num3=0
         p_num2=0
         p_num1=0
-        while data['age']:
-            p_temp = data['age'].pop()
+        while len(m_data['age']) != 0 :
+            p_temp = m_data['age'].pop()
             if(p_count==0):
                 p_num5 = p_temp
             elif(p_count==1):
@@ -869,8 +873,8 @@ def addBookmark():
         m11 = 0
         m12 = 0
 
-        while data['month']:
-            m_temp = data['month'].pop()
+        while len(m_data['month']) !=0 :
+            m_temp = m_data['month'].pop()
             if(m_temp == 1):
                 m1 = 1
             elif(m_temp==2):
@@ -898,18 +902,23 @@ def addBookmark():
     
         d1 = 0
         d2 = 0
-        while data['time']:
-            d_temp = data['time'].pop()
+        while len(m_data['time']) != 0:
+            d_temp = m_data['time'].pop()
             if(d_temp == 'evening'):
                 d1 = 1
             elif(d_temp == 'afternoon'):
                 d2 = 1
     
         my_tag = " "
-        if data['addr'] :
-            my_tag = data['addr']
+        if m_data['addr'] :
+            my_tag = m_data['addr']
 
         #여기서 값이 잘못 들어 간것
+        print(m_data)
+        print(s1)
+        print(m1)
+
+        print(d1)
         g.db.execute(addbookmark_sql,(m_row[1],m_row[2],m_row[3],m_row[4],m_row[5],m_row[6],m_row[7],m_row[8],m_row[9],m_row[10],m_row[11],m_row[12],m_row[13],m_row[14],m_row[15],m_row[16],m_row[17],m_row[18],m_row[19],user,my_tag,s1,s2,p_num1,p_num2,p_num3,p_num4,p_num5,m1,m2,m3,m4,m5,m6,m7,m8,m9,m10,m11,m12,d1,d2))
         print(cur.fetchone()) 
         g.db.commit()
@@ -933,7 +942,7 @@ def addBookmark():
 @app.route('/map/<bnum>', methods=['GET','POST'])
 def clickBookmark(bnum):
     # bnum 을 이용한 map검색 결과를 entries에 저장 
-    
+    where_query =""
     cur = g.db.execute('select * from bookmark where b_num =(?)',(bnum,))
     mys = [dict(b_num = row[0], year=row[1], month=row[2],  day=row[3],  time=row[5], isholiday=row[4],  
         location=row[6], mapx=row[7], mapy=row[8], weather=row[9], 
@@ -952,6 +961,7 @@ def clickBookmark(bnum):
     data = {'sex':[], 'age':[], 'month':[], 'time':[], 'addr' :""}
     
     for my in  mys:
+        print(my)
         if not my['tag'] == " ":
             my_query += "location = '%"
             my_query += my['tag']
@@ -962,103 +972,106 @@ def clickBookmark(bnum):
         if my['man'] == 1:
             data['sex'].append('man')
             agetemp = my['p_num50']
+            print(agetemp)
             my_query += 'man50>'
             if agetemp :
-                where_query+=agetemp
+                my_query+=str(agetemp)
                 data['age'].append('agetemp')
             else :
-                where_query+=0    
+                my_query+="0"    
                 data['age'].append('0')
             my_query += ' and ' 
             
             agetemp = my['p_num40']
             my_query += 'man40>'
             if agetemp :
-                where_query+=agetemp
+                my_query+=str(agetemp)
                 data['age'].append('agetemp')
             else :
-                where_query+=0    
+                my_query+=str(0)    
                 data['age'].append('0')
             my_query += ' and ' 
             
             agetemp = my['p_num30']
             my_query += 'man30>'
             if agetemp :
-                where_query+=agetemp
+                my_query+=str(agetemp)
                 data['age'].append('agetemp')
             else :
-                where_query+=0    
+                my_query+=str(0)    
                 data['age'].append('0')
             my_query += ' and ' 
             
             agetemp = my['p_num20']
             my_query += 'man20>'
             if agetemp :
-                where_query+=agetemp
+                my_query+=str(agetemp)
                 data['age'].append('agetemp')
             else :
-                where_query+=0    
+                my_query+=str(0)    
                 data['age'].append('0')
             my_query += ' and ' 
             
             agetemp = my['p_num10']
             my_query += 'man10>'
             if agetemp :
-                where_query+=agetemp
+                my_query+=str(agetemp)
                 data['age'].append('agetemp')
             else :
-                where_query+=0    
+                my_query+=str(0)    
                 data['age'].append('0')
             my_query += ' and ' 
             
         if my['woman'] == 1:
             agetemp = my['p_num50']
             my_query += 'woman50>'
+            print(agetemp)
             if agetemp :
-                where_query+=agetemp
+                
+                my_query+=str(agetemp)
                 data['age'].append('agetemp')
             else :
-                where_query+=0    
+                my_query+=str(0)    
                 data['age'].append('0')
             my_query += ' and ' 
             
             agetemp = my['p_num40']
             my_query += 'woman40>'
             if agetemp :
-                where_query+=agetemp
+                my_query+=agetemp
                 data['age'].append('agetemp')
             else :
-                where_query+=0    
+                my_query+=str(0)    
                 data['age'].append('0')
             my_query += ' and ' 
             
             agetemp = my['p_num30']
             my_query += 'woman30>'
             if agetemp :
-                where_query+=agetemp
+                my_query+=str(agetemp)
                 data['age'].append('agetemp')
             else :
-                where_query+=0    
+                my_query+=str(0)    
                 data['age'].append('0')
             my_query += ' and ' 
             
             agetemp = my['p_num20']
             my_query += 'woman20>'
             if agetemp :
-                where_query+=agetemp
+                my_query+=str(agetemp)
                 data['age'].append('agetemp')
             else :
-                where_query+=0    
+                my_query+=str(0)    
                 data['age'].append('0')
             my_query += ' and ' 
             
             agetemp = my['p_num10']
             my_query += 'woman10>'
             if agetemp :
-                where_query+=agetemp
+                my_query+=str(agetemp)
                 data['age'].append('agetemp')
             else :
-                where_query+=0    
+                my_query+=str(0)    
                 data['age'].append('0')
             my_query += ' and ' 
         data['age'] = list(set(data['age']))
@@ -1119,7 +1132,6 @@ def clickBookmark(bnum):
         man10=row[10], man20=row[11], man30=row[12], man40=row[13], man50=row[14],
         woman10=row[15], woman20=row[16], woman30=row[17], woman40=row[18], woman50=row[19]
         )for row in cur.fetchall()]
-    print(data)
     
     if data['addr']:
         NAVERKEY  = "7f988a1d3bc4b0767fef224ef85d1743"
